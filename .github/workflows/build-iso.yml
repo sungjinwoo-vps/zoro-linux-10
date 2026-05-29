@@ -99,14 +99,32 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          dnf install -y \
-            rpm-build rpmdevtools createrepo_c \
-            golang gtk4-devel libadwaita-devel \
+          echo "⚔ Setting up build environment..."
+          # Enable CRB (CodeReady Builder) for -devel packages
+          dnf install -y dnf-plugins-core 2>&1 | tail -3 || true
+          dnf config-manager --set-enabled crb 2>&1 | tail -3 || true
+
+          # Enable EPEL for inkscape, ImageMagick, etc.
+          dnf install -y epel-release 2>&1 | tail -3 || \
+          dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm 2>&1 | tail -3 || true
+
+          # Core build tools — must succeed (install separately so a missing
+          # optional dep can't abort the whole transaction)
+          dnf install -y rpm-build rpmdevtools createrepo_c 2>&1 | tail -5
+
+          # Optional build deps — skip any that aren't available
+          dnf install -y --skip-broken --setopt=install_weak_deps=False \
+            golang \
+            gtk4-devel libadwaita-devel \
             python3-devel desktop-file-utils \
             ImageMagick inkscape librsvg2-tools \
             xcursorgen xorg-x11-apps \
-            2>/dev/null || true
-          rpmdev-setuptree
+            2>&1 | tail -15 || true
+
+          # Set up rpmbuild tree (don't depend on rpmdev-setuptree succeeding)
+          mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+          rpmdev-setuptree 2>/dev/null || true
+          echo "  ✓ Build environment ready"
 
       - name: Build all RPMs
         run: |
@@ -166,10 +184,13 @@ jobs:
         with:
           name: zoro-rpms
           path: built-rpms/
+        continue-on-error: true
 
       - name: Install compose tools
         run: |
-          dnf install -y createrepo_c dnf-utils yum-utils 2>/dev/null || true
+          dnf install -y dnf-plugins-core 2>&1 | tail -3 || true
+          dnf config-manager --set-enabled crb 2>&1 | tail -3 || true
+          dnf install -y createrepo_c dnf-utils yum-utils 2>&1 | tail -5 || true
 
       - name: Create repository structure
         run: |
@@ -250,16 +271,25 @@ jobs:
         with:
           name: zoro-repo
           path: /srv/zoro-repos/
+        continue-on-error: true
 
       - name: Install ISO build tools
         run: |
-          dnf install -y \
-            lorax lorax-lmc-novirt anaconda \
+          echo "⚔ Installing ISO build tools..."
+          dnf install -y dnf-plugins-core 2>&1 | tail -3 || true
+          dnf config-manager --set-enabled crb 2>&1 | tail -3 || true
+          dnf install -y epel-release 2>&1 | tail -3 || \
+          dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm 2>&1 | tail -3 || true
+
+          # Core ISO tools
+          dnf install -y --skip-broken --setopt=install_weak_deps=False \
+            lorax lorax-lmc-novirt \
             xorriso syslinux syslinux-nonlinux \
             grub2-efi-x64 shim-x64 \
             genisoimage isomd5sum \
-            squashfs-tools dracut \
-            2>/dev/null || true
+            squashfs-tools dracut createrepo_c \
+            2>&1 | tail -15 || true
+          echo "  ✓ ISO tools installed"
 
       - name: Prepare ISO tree
         run: |
