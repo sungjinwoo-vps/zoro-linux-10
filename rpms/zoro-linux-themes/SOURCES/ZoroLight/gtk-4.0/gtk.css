@@ -1,0 +1,45 @@
+/* ZoroLight — GTK4 Light Theme for Zoro Linux 10 */
+
+@import url("resource:///org/gtk/libgtk/theme/Adwaita/Adwaita.css");
+
+@define-color accent_bg_color #52B788;
+@define-color accent_fg_color white;
+@define-color accent_color #2D6A4F;
+@define-color window_bg_color #F0EAD6;
+@define-color window_fg_color #1A1A1A;
+@define-color view_bg_color #FAFAF5;
+@define-color view_fg_color #1A1A1A;
+@define-color headerbar_bg_color #2D6A4F;
+@define-color headerbar_fg_color #F5F5F0;
+@define-color headerbar_border_color shade(#2D6A4F, 0.85);
+@define-color sidebar_bg_color shade(#F0EAD6, 0.97);
+@define-color sidebar_fg_color #1A1A1A;
+@define-color card_bg_color #FAFAF5;
+@define-color card_fg_color #1A1A1A;
+@define-color popover_bg_color #FAFAF5;
+@define-color popover_fg_color #1A1A1A;
+@define-color dialog_bg_color #F0EAD6;
+@define-color dialog_fg_color #1A1A1A;
+@define-color warning_bg_color #C9A84C;
+@define-color warning_fg_color #1A1A1A;
+@define-color warning_color #C9A84C;
+@define-color error_bg_color #CC4444;
+@define-color error_fg_color white;
+@define-color error_color #CC4444;
+@define-color success_bg_color #2D6A4F;
+@define-color success_fg_color white;
+@define-color success_color #2D6A4F;
+
+button {
+    border-radius: 18px;
+}
+
+button.suggested-action {
+    background-color: @accent_bg_color;
+    color: white;
+}
+
+scrollbar slider {
+    min-width: 6px;
+    min-height: 6px;
+}

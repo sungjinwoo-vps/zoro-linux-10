@@ -1,0 +1,42 @@
+[plasmasvg]
+# Zoro Linux Santoryu — Plasma SVG colour overrides
+# Used by the Plasma theme engine to recolour SVG elements.
+
+# Panel colours
+[panel]
+BackgroundColor=26,58,42,220
+TextColor=245,245,240
+ShadowColor=0,0,0,128
+BorderColor=82,183,136,50
+
+# Task manager
+[taskbar]
+NormalColor=168,181,200
+ActiveColor=82,183,136
+HoverColor=245,245,240
+MinimizedColor=168,181,200,128
+
+# System tray
+[systray]
+IconColor=168,181,200
+ActiveColor=82,183,136
+
+# Tooltip
+[tooltip]
+BackgroundColor=13,17,23,230
+TextColor=245,245,240
+BorderColor=82,183,136,80
+
+# Widgets (applets)
+[widget]
+BackgroundColor=26,58,42,200
+TextColor=245,245,240
+AccentColor=82,183,136
+BorderColor=82,183,136,30
+
+# Buttons in panel
+[button]
+BackgroundColor=45,106,79,180
+TextColor=245,245,240
+HoverColor=82,183,136,60
+PressedColor=82,183,136,100

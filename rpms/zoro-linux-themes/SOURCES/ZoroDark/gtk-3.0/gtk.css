@@ -1,0 +1,500 @@
+/* ═══════════════════════════════════════════════════════════════
+ * ZoroDark — GTK3 Theme for Zoro Linux 10
+ * /usr/share/themes/ZoroDark/gtk-3.0/gtk.css
+ * ═══════════════════════════════════════════════════════════════
+ * Based on Adwaita-dark, recoloured to Zoro Linux palette.
+ * Primary: #2D6A4F | Accent: #52B788 | Gold: #C9A84C
+ * "The blade cuts only what it must."
+ * ═══════════════════════════════════════════════════════════════ */
+
+/* ── CSS Variables ───────────────────────────────────────────── */
+@define-color theme_bg_color #1A3A2A;
+@define-color theme_fg_color #F5F5F0;
+@define-color theme_base_color #0D1117;
+@define-color theme_text_color #F5F5F0;
+@define-color theme_selected_bg_color #2D6A4F;
+@define-color theme_selected_fg_color #F5F5F0;
+
+@define-color zoro_primary #2D6A4F;
+@define-color zoro_dark #1A3A2A;
+@define-color zoro_accent #52B788;
+@define-color zoro_gold #C9A84C;
+@define-color zoro_dark_gold #8B6914;
+@define-color zoro_silver #A8B5C8;
+@define-color zoro_surface #F0EAD6;
+@define-color zoro_bg_dark #0D1117;
+@define-color zoro_text_light #F5F5F0;
+@define-color zoro_text_dark #1A1A1A;
+
+@define-color borders alpha(@zoro_accent, 0.3);
+@define-color unfocused_borders alpha(@zoro_silver, 0.2);
+@define-color warning_color #C9A84C;
+@define-color error_color #FF5555;
+@define-color success_color #52B788;
+@define-color destructive_color #FF5555;
+@define-color link_color #52B788;
+@define-color link_visited_color #8B6914;
+
+/* ── Global ──────────────────────────────────────────────────── */
+* {
+    -gtk-icon-style: symbolic;
+    outline-color: alpha(@zoro_accent, 0.5);
+    outline-style: dashed;
+    outline-offset: -3px;
+    outline-width: 1px;
+    -gtk-secondary-caret-color: @zoro_accent;
+}
+
+/* ── Window ──────────────────────────────────────────────────── */
+window {
+    background-color: @theme_bg_color;
+    color: @theme_fg_color;
+}
+
+window:backdrop {
+    background-color: shade(@theme_bg_color, 0.95);
+}
+
+/* Active window border */
+decoration {
+    border-radius: 8px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4),
+                0 0 0 1px alpha(@zoro_accent, 0.2);
+    margin: 10px;
+}
+
+decoration:backdrop {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3),
+                0 0 0 1px alpha(@zoro_silver, 0.1);
+}
+
+/* ── Header Bar ──────────────────────────────────────────────── */
+headerbar {
+    background-color: @zoro_dark;
+    border-bottom: 1px solid alpha(@zoro_accent, 0.2);
+    color: @zoro_text_light;
+    padding: 4px 8px;
+    min-height: 36px;
+}
+
+headerbar:backdrop {
+    background-color: shade(@zoro_dark, 0.9);
+    border-color: alpha(@zoro_silver, 0.1);
+}
+
+headerbar .title {
+    font-weight: bold;
+    color: @zoro_text_light;
+}
+
+headerbar .subtitle {
+    font-size: smaller;
+    color: @zoro_silver;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+button {
+    background-color: alpha(@zoro_primary, 0.6);
+    border: 1px solid alpha(@zoro_accent, 0.3);
+    border-radius: 18px;
+    color: @zoro_text_light;
+    padding: 6px 16px;
+    min-height: 24px;
+    transition: all 200ms ease;
+}
+
+button:hover {
+    background-color: @zoro_primary;
+    border-color: @zoro_accent;
+    box-shadow: 0 0 4px alpha(@zoro_accent, 0.3);
+}
+
+button:active,
+button:checked {
+    background-color: @zoro_accent;
+    color: @zoro_bg_dark;
+    border-color: @zoro_accent;
+}
+
+button:disabled {
+    background-color: alpha(@zoro_dark, 0.3);
+    border-color: alpha(@zoro_silver, 0.1);
+    color: alpha(@zoro_silver, 0.5);
+}
+
+/* Suggested action (primary CTA) */
+button.suggested-action {
+    background-color: @zoro_accent;
+    color: @zoro_bg_dark;
+    border-color: shade(@zoro_accent, 0.8);
+    font-weight: bold;
+}
+
+button.suggested-action:hover {
+    background-color: shade(@zoro_accent, 1.1);
+    box-shadow: 0 0 8px alpha(@zoro_accent, 0.4);
+}
+
+/* Destructive action */
+button.destructive-action {
+    background-color: @error_color;
+    color: white;
+    border-color: shade(@error_color, 0.8);
+}
+
+/* Flat/ghost buttons */
+button.flat {
+    background-color: transparent;
+    border-color: transparent;
+    border-radius: 18px;
+}
+
+button.flat:hover {
+    background-color: alpha(@zoro_primary, 0.3);
+}
+
+/* ── Entries (Text Input) ────────────────────────────────────── */
+entry {
+    background-color: @zoro_bg_dark;
+    border: 1px solid alpha(@zoro_accent, 0.3);
+    border-radius: 6px;
+    color: @zoro_text_light;
+    padding: 6px 10px;
+    min-height: 24px;
+    transition: border-color 200ms ease;
+}
+
+entry:focus {
+    border-color: @zoro_accent;
+    box-shadow: 0 0 0 2px alpha(@zoro_accent, 0.2);
+}
+
+entry:disabled {
+    background-color: alpha(@zoro_dark, 0.3);
+    color: @zoro_silver;
+}
+
+entry selection {
+    background-color: @zoro_accent;
+    color: @zoro_bg_dark;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+scrollbar {
+    background-color: transparent;
+}
+
+scrollbar slider {
+    background-color: alpha(@zoro_accent, 0.4);
+    border-radius: 100px;
+    min-width: 6px;
+    min-height: 6px;
+    transition: all 200ms ease;
+}
+
+scrollbar slider:hover {
+    background-color: alpha(@zoro_accent, 0.7);
+    min-width: 8px;
+}
+
+scrollbar slider:active {
+    background-color: @zoro_accent;
+}
+
+/* Auto-hide scrollbar */
+scrollbar.overlay-indicator:not(.dragging):not(.hovering) slider {
+    min-width: 4px;
+    min-height: 4px;
+    background-color: alpha(@zoro_accent, 0.3);
+}
+
+/* ── Switches ────────────────────────────────────────────────── */
+switch {
+    background-color: alpha(@zoro_silver, 0.2);
+    border: 1px solid alpha(@zoro_silver, 0.3);
+    border-radius: 14px;
+    min-width: 48px;
+    min-height: 24px;
+    transition: all 200ms ease;
+}
+
+switch:checked {
+    background-color: @zoro_accent;
+    border-color: shade(@zoro_accent, 0.8);
+}
+
+switch slider {
+    background-color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    min-height: 20px;
+    margin: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Check/Radio Buttons ─────────────────────────────────────── */
+checkbutton check,
+radiobutton radio {
+    background-color: @zoro_bg_dark;
+    border: 2px solid alpha(@zoro_accent, 0.4);
+    min-width: 18px;
+    min-height: 18px;
+    transition: all 200ms ease;
+}
+
+checkbutton check {
+    border-radius: 4px;
+}
+
+radiobutton radio {
+    border-radius: 50%;
+}
+
+checkbutton check:checked,
+radiobutton radio:checked {
+    background-color: @zoro_accent;
+    border-color: @zoro_accent;
+    color: @zoro_bg_dark;
+}
+
+/* ── Lists & Rows ────────────────────────────────────────────── */
+list,
+listview {
+    background-color: @zoro_bg_dark;
+    border: 1px solid alpha(@zoro_accent, 0.1);
+    border-radius: 8px;
+}
+
+list row,
+listview row {
+    padding: 8px 12px;
+    transition: background-color 150ms ease;
+}
+
+list row:hover,
+listview row:hover {
+    background-color: alpha(@zoro_primary, 0.3);
+}
+
+list row:selected,
+listview row:selected {
+    background-color: @zoro_primary;
+    color: @zoro_text_light;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.sidebar {
+    background-color: shade(@zoro_dark, 0.9);
+    border-right: 1px solid alpha(@zoro_accent, 0.15);
+}
+
+.sidebar row:selected {
+    background-color: @zoro_primary;
+}
+
+/* ── Notebook (Tabs) ──────────────────────────────────────────── */
+notebook > header {
+    background-color: @zoro_dark;
+    border-bottom: 1px solid alpha(@zoro_accent, 0.2);
+}
+
+notebook > header tab {
+    padding: 6px 16px;
+    color: @zoro_silver;
+    border-bottom: 2px solid transparent;
+    transition: all 200ms ease;
+}
+
+notebook > header tab:checked {
+    color: @zoro_accent;
+    border-bottom-color: @zoro_accent;
+}
+
+notebook > header tab:hover {
+    color: @zoro_text_light;
+    background-color: alpha(@zoro_primary, 0.2);
+}
+
+/* ── Menus ────────────────────────────────────────────────────── */
+menu,
+.menu,
+popover.menu {
+    background-color: @zoro_bg_dark;
+    border: 1px solid alpha(@zoro_accent, 0.2);
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+menu menuitem,
+popover.menu modelbutton {
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background-color 150ms ease;
+}
+
+menu menuitem:hover,
+popover.menu modelbutton:hover {
+    background-color: alpha(@zoro_primary, 0.4);
+    color: @zoro_text_light;
+}
+
+/* ── Tooltips ────────────────────────────────────────────────── */
+tooltip {
+    background-color: @zoro_bg_dark;
+    border: 1px solid alpha(@zoro_accent, 0.3);
+    border-radius: 6px;
+    color: @zoro_text_light;
+    padding: 4px 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Progress Bar ────────────────────────────────────────────── */
+progressbar trough {
+    background-color: alpha(@zoro_silver, 0.15);
+    border-radius: 100px;
+    min-height: 6px;
+}
+
+progressbar progress {
+    background-color: @zoro_accent;
+    border-radius: 100px;
+    min-height: 6px;
+    transition: all 300ms ease;
+}
+
+/* ── Scale (Slider) ──────────────────────────────────────────── */
+scale trough {
+    background-color: alpha(@zoro_silver, 0.15);
+    border-radius: 100px;
+    min-height: 4px;
+}
+
+scale highlight {
+    background-color: @zoro_accent;
+    border-radius: 100px;
+    min-height: 4px;
+}
+
+scale slider {
+    background-color: @zoro_accent;
+    border-radius: 50%;
+    min-width: 16px;
+    min-height: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+scale slider:hover {
+    background-color: shade(@zoro_accent, 1.15);
+    min-width: 18px;
+    min-height: 18px;
+}
+
+/* ── Spinbutton ──────────────────────────────────────────────── */
+spinbutton {
+    background-color: @zoro_bg_dark;
+    border: 1px solid alpha(@zoro_accent, 0.3);
+    border-radius: 6px;
+}
+
+/* ── Infobar ─────────────────────────────────────────────────── */
+infobar {
+    border-radius: 0;
+}
+
+infobar.info {
+    background-color: alpha(@zoro_accent, 0.2);
+    color: @zoro_text_light;
+}
+
+infobar.warning {
+    background-color: alpha(@zoro_gold, 0.2);
+    color: @zoro_gold;
+}
+
+infobar.error {
+    background-color: alpha(@error_color, 0.2);
+    color: @error_color;
+}
+
+/* ── Treeview ────────────────────────────────────────────────── */
+treeview.view {
+    background-color: @zoro_bg_dark;
+    color: @zoro_text_light;
+}
+
+treeview.view:selected {
+    background-color: @zoro_primary;
+    color: @zoro_text_light;
+}
+
+treeview.view header button {
+    background-color: @zoro_dark;
+    border-bottom: 1px solid alpha(@zoro_accent, 0.2);
+    border-radius: 0;
+    color: @zoro_gold;
+    font-weight: bold;
+}
+
+/* ── Calendar ────────────────────────────────────────────────── */
+calendar {
+    background-color: @zoro_bg_dark;
+    color: @zoro_text_light;
+    border: 1px solid alpha(@zoro_accent, 0.2);
+    border-radius: 8px;
+}
+
+calendar:selected {
+    background-color: @zoro_accent;
+    color: @zoro_bg_dark;
+}
+
+calendar.header {
+    color: @zoro_gold;
+}
+
+/* ── Dropdown ────────────────────────────────────────────────── */
+combobox button.combo {
+    background-color: @zoro_bg_dark;
+    border: 1px solid alpha(@zoro_accent, 0.3);
+    border-radius: 6px;
+}
+
+combobox button.combo:hover {
+    border-color: @zoro_accent;
+}
+
+/* ── Linked Buttons ──────────────────────────────────────────── */
+.linked > button {
+    border-radius: 0;
+}
+
+.linked > button:first-child {
+    border-radius: 18px 0 0 18px;
+}
+
+.linked > button:last-child {
+    border-radius: 0 18px 18px 0;
+}
+
+.linked > button:only-child {
+    border-radius: 18px;
+}
+
+/* ── Status Badges (haramaki-green pill) ─────────────────────── */
+.badge,
+.count-badge {
+    background-color: @zoro_accent;
+    color: @zoro_bg_dark;
+    border-radius: 100px;
+    padding: 2px 8px;
+    font-weight: bold;
+    font-size: 0.8em;
+}
+
+/* ── Terminal ────────────────────────────────────────────────── */
+.terminal-window vte-terminal {
+    background-color: @zoro_bg_dark;
+    color: @zoro_text_light;
+    padding: 8px;
+}

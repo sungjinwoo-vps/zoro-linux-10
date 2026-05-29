@@ -1,0 +1,90 @@
+.TH ZORO-HARDEN 8 "2026" "Zoro Linux 10" "Zoro Linux Manual"
+
+.SH NAME
+zoro\-harden \- Zoro Linux security hardening tool
+
+.SH SYNOPSIS
+.B zoro\-harden
+.RI [ \-\-profile= PROFILE ]
+.RI [ \-\-check ]
+.RI [ \-\-status ]
+.RI [ \-\-revert ]
+
+.SH DESCRIPTION
+.B zoro-harden
+applies security hardening profiles to a Zoro Linux system.
+It configures kernel parameters, disables unused services,
+hardens SSH, and optionally runs OpenSCAP remediation.
+
+.SH OPTIONS
+.TP
+.BI \-\-profile= PROFILE
+Apply a hardening profile. Available profiles:
+.RS
+.TP
+.B zoro-default
+Zoro Linux default hardening (recommended).
+.TP
+.B cis-l1
+CIS Benchmark Level 1.
+.TP
+.B cis-l2
+CIS Benchmark Level 2.
+.TP
+.B stig
+DISA STIG profile.
+.RE
+
+.TP
+.B \-\-check
+Audit current system against hardening baseline.
+
+.TP
+.B \-\-status
+Show current hardening status.
+
+.TP
+.B \-\-revert
+Revert to pre-hardening defaults.
+
+.TP
+.B \-\-list\-profiles
+List available profiles.
+
+.TP
+.B \-\-dry\-run
+Show what would change without applying.
+
+.SH EXAMPLES
+.TP
+Apply default hardening:
+.B zoro-harden --profile=zoro-default
+
+.TP
+Check compliance:
+.B zoro-harden --check
+
+.TP
+Apply CIS Level 2:
+.B zoro-harden --profile=cis-l2
+
+.SH FILES
+.TP
+.I /etc/sysctl.d/99-zoro-hardening.conf
+Kernel hardening parameters.
+.TP
+.I /etc/modprobe.d/zoro-blacklist.conf
+Blacklisted kernel modules.
+.TP
+.I /var/lib/zoro-harden/state
+Current hardening state.
+
+.SH SEE ALSO
+.BR zoro-linux (7),
+.BR sysctl (8),
+.BR firewalld (1),
+.BR selinux (8),
+.BR oscap (8)
+
+.SH AUTHOR
+The Zoro Linux Project <security@zorolinux.org>

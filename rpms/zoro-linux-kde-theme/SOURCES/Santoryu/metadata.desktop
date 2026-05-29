@@ -1,0 +1,18 @@
+[Metadata]
+Name=Santoryu
+Description=Zoro Linux Plasma theme — dark green with blade accents
+Author=Zoro Linux Project
+Website=https://zorolinux.org
+License=GPLv2
+
+[Wallpaper]
+defaultWallpaperTheme=zorolinux
+defaultFileSuffix=.png
+defaultWidth=1920
+defaultHeight=1080
+
+[ContrastEffect]
+enabled=true
+contrast=0.2
+intensity=0.4
+saturation=1.7

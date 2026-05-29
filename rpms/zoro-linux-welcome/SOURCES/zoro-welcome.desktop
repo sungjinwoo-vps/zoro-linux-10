@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Welcome to Zoro Linux
+Comment=Zoro Linux 10 first-run welcome application
+Exec=/usr/bin/zoro-welcome
+Icon=zoro-linux
+Terminal=false
+Type=Application
+Categories=System;
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=3
+OnlyShowIn=GNOME;KDE;

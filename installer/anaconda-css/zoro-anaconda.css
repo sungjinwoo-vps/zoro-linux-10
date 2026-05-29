@@ -1,0 +1,148 @@
+/* ═══════════════════════════════════════════════════════════════
+ * Zoro Linux 10 — Anaconda Installer CSS Overrides
+ * Injected via product.img into /usr/share/anaconda/ui/css/
+ * ═══════════════════════════════════════════════════════════════ */
+
+:root {
+    --primary: #2D6A4F;
+    --accent: #52B788;
+    --gold: #C9A84C;
+    --dark: #1A3A2A;
+    --bg: #0D1117;
+    --text: #F5F5F0;
+    --silver: #A8B5C8;
+}
+
+/* ── Hub (Main Screen) ───────────────────────────────────────── */
+AnacondaBaseWindow {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.logo {
+    /* Zoro Linux logo placement */
+    margin: 24px;
+}
+
+/* Title bar */
+.anaconda-header {
+    background-color: var(--dark);
+    border-bottom: 2px solid var(--accent);
+    padding: 12px 24px;
+}
+
+.anaconda-header label {
+    color: var(--text);
+    font-family: 'Inter', 'Noto Sans', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* ── Spoke Selectors (Hub icons) ─────────────────────────────── */
+.spoke-selector {
+    background-color: alpha(var(--primary), 0.3);
+    border: 1px solid alpha(var(--accent), 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 8px;
+    transition: all 200ms ease;
+}
+
+.spoke-selector:hover {
+    background-color: alpha(var(--primary), 0.5);
+    border-color: var(--accent);
+}
+
+.spoke-selector:selected {
+    background-color: var(--primary);
+    border-color: var(--accent);
+}
+
+.spoke-selector .spoke-title {
+    color: var(--text);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.spoke-selector .spoke-status {
+    color: var(--silver);
+    font-size: 12px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.anaconda-button,
+#continue-button {
+    background-color: var(--accent);
+    color: var(--bg);
+    border-radius: 18px;
+    padding: 8px 24px;
+    font-weight: bold;
+    border: none;
+    min-height: 36px;
+}
+
+.anaconda-button:hover,
+#continue-button:hover {
+    background-color: shade(var(--accent), 1.1);
+    box-shadow: 0 0 8px alpha(var(--accent), 0.4);
+}
+
+#quit-button {
+    background-color: transparent;
+    color: var(--silver);
+    border: 1px solid var(--silver);
+    border-radius: 18px;
+}
+
+#quit-button:hover {
+    color: #FF5555;
+    border-color: #FF5555;
+}
+
+/* ── Progress Bar ────────────────────────────────────────────── */
+.progress-bar {
+    background-color: alpha(var(--silver), 0.15);
+    border-radius: 100px;
+}
+
+.progress-bar progress {
+    background-color: var(--accent);
+    border-radius: 100px;
+}
+
+/* ── Software Selection ──────────────────────────────────────── */
+.environment-selector {
+    background-color: alpha(var(--primary), 0.2);
+    border: 1px solid alpha(var(--accent), 0.15);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 4px;
+}
+
+.environment-selector:selected {
+    background-color: var(--primary);
+    border-color: var(--accent);
+}
+
+.environment-name {
+    color: var(--gold);
+    font-weight: bold;
+}
+
+.environment-description {
+    color: var(--text);
+    font-size: 12px;
+}
+
+/* ── Welcome Screen ──────────────────────────────────────────── */
+.welcome-label {
+    color: var(--accent);
+    font-size: 28px;
+    font-weight: bold;
+    font-family: 'Cinzel', 'Noto Serif', serif;
+}
+
+.welcome-sublabel {
+    color: var(--gold);
+    font-size: 16px;
+}

@@ -1,0 +1,9 @@
+[zoro-appstream]
+name=Zoro Linux $releasever - AppStream
+baseurl=https://mirror.zorolinux.org/$releasever/AppStream/$basearch/os/
+#mirrorlist=https://mirrors.zorolinux.org/mirrorlist?repo=appstream-$releasever&arch=$basearch
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-zorolinux
+enabled=1
+countme=1
+metadata_expire=6h

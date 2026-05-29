@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ═══════════════════════════════════════════════════════════
+     Zoro Linux 10 — Variants Definition
+     Used by Pungi to define compose variants.
+     ═══════════════════════════════════════════════════════════ -->
+<variants>
+  <variant id="BaseOS" name="BaseOS" type="variant">
+    <arches>
+      <arch>x86_64</arch>
+      <arch>aarch64</arch>
+    </arches>
+    <groups>
+      <group>core</group>
+      <group>base-minimal</group>
+    </groups>
+    <environments>
+      <environment>minimal-environment</environment>
+    </environments>
+  </variant>
+
+  <variant id="AppStream" name="AppStream" type="variant">
+    <arches>
+      <arch>x86_64</arch>
+      <arch>aarch64</arch>
+    </arches>
+    <groups>
+      <group>gnome-desktop</group>
+      <group>kde-desktop-environment</group>
+      <group>development-tools</group>
+      <group>rpm-development-tools</group>
+      <group>server-product-environment</group>
+      <group>workstation-product-environment</group>
+      <group>container-tools</group>
+      <group>virtualization</group>
+      <group>zoro-desktop-extras</group>
+    </groups>
+    <environments>
+      <environment>server-product-environment</environment>
+      <environment>workstation-product-environment</environment>
+      <environment>minimal-environment</environment>
+    </environments>
+  </variant>
+
+  <variant id="Extras" name="Extras" type="variant">
+    <arches>
+      <arch>x86_64</arch>
+      <arch>aarch64</arch>
+    </arches>
+    <groups>
+      <group>zoro-extras</group>
+    </groups>
+  </variant>
+
+  <variant id="CRB" name="CRB" type="variant">
+    <arches>
+      <arch>x86_64</arch>
+      <arch>aarch64</arch>
+    </arches>
+    <groups>
+      <group>buildsys-build</group>
+    </groups>
+  </variant>
+</variants>

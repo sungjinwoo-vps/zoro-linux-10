@@ -1,0 +1,9 @@
+[zoro-extras]
+name=Zoro Linux $releasever - Extras
+baseurl=https://mirror.zorolinux.org/$releasever/extras/$basearch/os/
+#mirrorlist=https://mirrors.zorolinux.org/mirrorlist?repo=extras-$releasever&arch=$basearch
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-zorolinux
+enabled=1
+countme=1
+metadata_expire=6h

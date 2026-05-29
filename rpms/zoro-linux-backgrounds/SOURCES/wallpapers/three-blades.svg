@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- Three Blades — Prominent three-sword X arrangement -->
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#0F1A14"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A8B5C8" stop-opacity="0.08"/>
+      <stop offset="50%" stop-color="#F5F5F0" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#A8B5C8" stop-opacity="0.06"/>
+    </linearGradient>
+    <filter id="steelGlow">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <rect width="3840" height="2160" fill="url(#bg4)"/>
+
+  <!-- Centre blade -->
+  <rect x="1916" y="100" width="8" height="1960" rx="2"
+        fill="url(#steel)" filter="url(#steelGlow)"/>
+  <rect x="1918" y="120" width="4" height="1920" rx="1"
+        fill="#F5F5F0" opacity="0.03"/>
+
+  <!-- Left blade -->
+  <rect x="1916" y="200" width="8" height="1800" rx="2"
+        fill="url(#steel)" transform="rotate(-30, 1920, 1080)" filter="url(#steelGlow)"/>
+
+  <!-- Right blade -->
+  <rect x="1916" y="200" width="8" height="1800" rx="2"
+        fill="url(#steel)" transform="rotate(30, 1920, 1080)" filter="url(#steelGlow)"/>
+
+  <!-- Cross guard glow -->
+  <circle cx="1920" cy="1080" r="60" fill="#52B788" opacity="0.04" filter="url(#steelGlow)"/>
+  <circle cx="1920" cy="1080" r="30" fill="#C9A84C" opacity="0.03"/>
+
+  <!-- Corner accent sparks -->
+  <circle cx="200" cy="200" r="80" fill="#52B788" opacity="0.02"/>
+  <circle cx="3640" cy="200" r="80" fill="#52B788" opacity="0.02"/>
+  <circle cx="200" cy="1960" r="80" fill="#52B788" opacity="0.02"/>
+  <circle cx="3640" cy="1960" r="80" fill="#52B788" opacity="0.02"/>
+
+  <!-- Vignette -->
+  <radialGradient id="vig4" cx="50%" cy="50%" r="65%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+  </radialGradient>
+  <rect width="3840" height="2160" fill="url(#vig4)"/>
+</svg>

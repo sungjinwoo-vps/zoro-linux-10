@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- Nothing Happened — Pure near-black with tiny green dot -->
+  <rect width="3840" height="2160" fill="#0D1117"/>
+  <!-- The only sign that something happened -->
+  <circle cx="1920" cy="1080" r="2" fill="#52B788" opacity="0.3"/>
+</svg>

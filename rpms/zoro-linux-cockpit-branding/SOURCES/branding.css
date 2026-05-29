@@ -1,0 +1,103 @@
+/* Zoro Linux — Cockpit Web Console Branding CSS
+ * /usr/share/cockpit/branding/zorolinux/branding.css */
+
+/* ── Login Page ──────────────────────────────────────────────── */
+body.login-pf {
+    background-color: #0D1117 !important;
+    background-image: linear-gradient(135deg, #0D1117 0%, #1A3A2A 50%, #0D1117 100%) !important;
+}
+
+#brand {
+    margin-top: 48px;
+    margin-bottom: 24px;
+}
+
+#brand img {
+    max-height: 96px;
+}
+
+#login-brand-text {
+    color: #52B788 !important;
+    font-family: 'Inter', 'Noto Sans', sans-serif !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    letter-spacing: 2px;
+}
+
+.login-pf .container {
+    background-color: rgba(26, 58, 42, 0.6) !important;
+    border: 1px solid rgba(82, 183, 136, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px);
+    padding: 32px !important;
+}
+
+/* Login form */
+.login-pf #login-user-input,
+.login-pf #login-password-input {
+    background-color: rgba(13, 17, 23, 0.8) !important;
+    border: 1px solid rgba(82, 183, 136, 0.3) !important;
+    border-radius: 8px !important;
+    color: #F5F5F0 !important;
+    padding: 10px 14px !important;
+}
+
+.login-pf #login-user-input:focus,
+.login-pf #login-password-input:focus {
+    border-color: #52B788 !important;
+    box-shadow: 0 0 0 2px rgba(82, 183, 136, 0.2) !important;
+}
+
+.login-pf .btn-primary {
+    background-color: #52B788 !important;
+    border-color: #52B788 !important;
+    border-radius: 18px !important;
+    color: #0D1117 !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+}
+
+.login-pf .btn-primary:hover {
+    background-color: #2D6A4F !important;
+    color: #F5F5F0 !important;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+nav.cockpit-nav {
+    background-color: #1A3A2A !important;
+    border-right: 1px solid rgba(82, 183, 136, 0.15) !important;
+}
+
+.cockpit-nav .nav-item {
+    color: #A8B5C8 !important;
+    border-radius: 6px !important;
+    margin: 2px 4px !important;
+}
+
+.cockpit-nav .nav-item:hover {
+    background-color: rgba(82, 183, 136, 0.15) !important;
+    color: #F5F5F0 !important;
+}
+
+.cockpit-nav .nav-item.active {
+    background-color: #2D6A4F !important;
+    color: #52B788 !important;
+}
+
+/* Header */
+.cockpit-nav-header {
+    color: #C9A84C !important;
+    font-weight: 700 !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid rgba(82, 183, 136, 0.1) !important;
+}
+
+/* ── Main Content ────────────────────────────────────────────── */
+#content {
+    background-color: #0D1117 !important;
+}
+
+.ct-overview-header {
+    background-color: rgba(26, 58, 42, 0.4) !important;
+    border-bottom: 1px solid rgba(82, 183, 136, 0.15) !important;
+}

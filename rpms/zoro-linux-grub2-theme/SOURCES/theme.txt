@@ -1,0 +1,99 @@
+# ═══════════════════════════════════════════════════════════════
+# Zoro Linux 10 — GRUB2 Theme
+# /boot/grub2/themes/zorolinux/theme.txt
+# ═══════════════════════════════════════════════════════════════
+# "The swordsman who lights the way through the dark."
+
+# ── Global Properties ───────────────────────────────────────
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#0D1117"
+terminal-font: "Inter Regular 14"
+terminal-left: "0"
+terminal-top: "0"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
+# ── Boot Menu ────────────────────────────────────────────────
++ boot_menu {
+    left = 25%
+    top = 35%
+    width = 50%
+    height = 40%
+    item_font = "Inter Regular 16"
+    item_color = "#F5F5F0"
+    selected_item_font = "Inter Bold 16"
+    selected_item_color = "#52B788"
+    item_height = 36
+    item_padding = 12
+    item_spacing = 4
+    icon_width = 32
+    icon_height = 32
+    item_icon_space = 16
+    selected_item_pixmap_style = "select_*.png"
+    scrollbar = true
+    scrollbar_width = 6
+    scrollbar_thumb = "scrollbar_thumb_*.png"
+}
+
+# ── Title Label ──────────────────────────────────────────────
++ label {
+    left = 50%-200
+    top = 12%
+    width = 400
+    height = 40
+    text = "⚔  Zoro Linux 10  ⚔"
+    font = "Inter Bold 24"
+    color = "#52B788"
+    align = "center"
+}
+
+# ── Subtitle Label ───────────────────────────────────────────
++ label {
+    left = 50%-200
+    top = 18%
+    width = 400
+    height = 30
+    text = "Santoryu Edition"
+    font = "Inter Regular 14"
+    color = "#C9A84C"
+    align = "center"
+}
+
+# ── Countdown Timer ──────────────────────────────────────────
++ label {
+    left = 50%-200
+    top = 80%
+    width = 400
+    height = 30
+    id = "__timeout__"
+    text = "Booting in %d seconds..."
+    font = "Inter Regular 12"
+    color = "#A8B5C8"
+    align = "center"
+}
+
+# ── Footer ───────────────────────────────────────────────────
++ label {
+    left = 50%-250
+    top = 90%
+    width = 500
+    height = 20
+    text = "Press 'e' to edit, 'c' for command line"
+    font = "Inter Regular 10"
+    color = "#A8B5C8"
+    align = "center"
+}
+
+# ── Navigation Hints ────────────────────────────────────────
++ label {
+    left = 50%-100
+    top = 86%
+    width = 200
+    height = 20
+    text = "↑↓ Navigate  ⏎ Select"
+    font = "Inter Regular 10"
+    color = "#8B6914"
+    align = "center"
+}

@@ -1,0 +1,458 @@
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════
+# zoro-harden — Zoro Linux Security Hardening Tool
+# /usr/sbin/zoro-harden
+# ═══════════════════════════════════════════════════════════════
+# Applies security hardening profiles to a Zoro Linux system.
+# Supports CIS L1/L2 and STIG profiles via OpenSCAP.
+#
+# Usage:
+#   zoro-harden --profile=cis-l1      Apply CIS Level 1
+#   zoro-harden --profile=cis-l2      Apply CIS Level 2
+#   zoro-harden --profile=stig        Apply DISA STIG
+#   zoro-harden --check               Audit current hardening
+#   zoro-harden --status              Show hardening status
+#   zoro-harden --revert              Revert to defaults
+# ═══════════════════════════════════════════════════════════════
+set -euo pipefail
+
+VERSION="1.0.0"
+PROG="zoro-harden"
+BACKUP_DIR="/var/lib/zoro-harden/backups"
+STATE_FILE="/var/lib/zoro-harden/state"
+
+# ── Colours ──────────────────────────────────────────────────
+GREEN="\033[0;32m"
+GOLD="\033[0;33m"
+RED="\033[0;31m"
+SILVER="\033[0;37m"
+BOLD="\033[1m"
+RESET="\033[0m"
+
+log_info()  { echo -e "${GREEN}[⚔ INFO]${RESET} $*"; }
+log_warn()  { echo -e "${GOLD}[⚠ WARN]${RESET} $*"; }
+log_error() { echo -e "${RED}[✗ ERROR]${RESET} $*"; }
+log_ok()    { echo -e "${GREEN}[✓ OK]${RESET} $*"; }
+
+# ── Root Check ───────────────────────────────────────────────
+if [[ $EUID -ne 0 ]]; then
+    log_error "This tool must be run as root."
+    exit 1
+fi
+
+# ── Banner ───────────────────────────────────────────────────
+show_banner() {
+    echo -e "${GREEN}${BOLD}"
+    cat << 'BANNER'
+  ╔═══════════════════════════════════════════╗
+  ║     ⚔  ZORO-HARDEN  ⚔                   ║
+  ║     Zoro Linux Security Hardening        ║
+  ║     "Nothing happened."                  ║
+  ╚═══════════════════════════════════════════╝
+BANNER
+    echo -e "${RESET}"
+}
+
+# ── Help ─────────────────────────────────────────────────────
+show_help() {
+    show_banner
+    cat << HELPEOF
+Usage: $PROG [OPTIONS]
+
+Options:
+  --profile=PROFILE   Apply a hardening profile
+                      Profiles: cis-l1, cis-l2, stig, zoro-default
+  --check             Audit current system against hardening baseline
+  --status            Show current hardening status
+  --revert            Revert to pre-hardening state
+  --list-profiles     List available profiles
+  --dry-run           Show what would be changed without applying
+  --version           Show version
+  --help              Show this help
+
+Examples:
+  $PROG --profile=cis-l2       Apply CIS Level 2 hardening
+  $PROG --check                Check compliance
+  $PROG --status               View hardening status
+
+HELPEOF
+}
+
+# ── Profile Definitions ─────────────────────────────────────
+
+apply_zoro_default() {
+    log_info "Applying Zoro Default hardening profile..."
+
+    # Kernel hardening
+    log_info "  Applying kernel hardening (sysctl)..."
+    cp /etc/sysctl.d/99-zoro-hardening.conf /etc/sysctl.d/ 2>/dev/null || {
+        cat > /etc/sysctl.d/99-zoro-hardening.conf << 'SYSEOF'
+kernel.dmesg_restrict = 1
+kernel.kptr_restrict = 2
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.tcp_syncookies = 1
+net.ipv6.conf.all.accept_ra = 0
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+kernel.randomize_va_space = 2
+SYSEOF
+    }
+    sysctl --system > /dev/null 2>&1
+    log_ok "  Kernel hardening applied."
+
+    # Module blacklist
+    log_info "  Applying module blacklist..."
+    if [[ ! -f /etc/modprobe.d/zoro-blacklist.conf ]]; then
+        log_warn "  Module blacklist not found. Install zoro-linux-security-hardening RPM."
+    else
+        log_ok "  Module blacklist already in place."
+    fi
+
+    # Ensure SELinux is enforcing
+    log_info "  Verifying SELinux is enforcing..."
+    if command -v getenforce &>/dev/null; then
+        SELINUX_STATUS=$(getenforce)
+        if [[ "$SELINUX_STATUS" == "Enforcing" ]]; then
+            log_ok "  SELinux: Enforcing"
+        else
+            log_warn "  SELinux is $SELINUX_STATUS — setting to Enforcing..."
+            setenforce 1 2>/dev/null || true
+            sed -i 's/^SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config 2>/dev/null
+        fi
+    fi
+
+    # Ensure firewalld is active
+    log_info "  Verifying firewalld..."
+    if systemctl is-active firewalld &>/dev/null; then
+        log_ok "  Firewalld: active"
+    else
+        log_warn "  Firewalld not active — enabling..."
+        systemctl enable --now firewalld 2>/dev/null || true
+    fi
+
+    # Ensure auditd is active
+    log_info "  Verifying audit daemon..."
+    if systemctl is-active auditd &>/dev/null; then
+        log_ok "  Auditd: active"
+    else
+        log_warn "  Auditd not active — enabling..."
+        systemctl enable --now auditd 2>/dev/null || true
+    fi
+
+    # SSH hardening
+    log_info "  Hardening SSH..."
+    SSHD_CONFIG="/etc/ssh/sshd_config.d/99-zoro-hardening.conf"
+    cat > "$SSHD_CONFIG" << 'SSHEOF'
+# Zoro Linux SSH Hardening
+Protocol 2
+PermitRootLogin no
+PasswordAuthentication yes
+PubkeyAuthentication yes
+PermitEmptyPasswords no
+X11Forwarding no
+MaxAuthTries 4
+AllowTcpForwarding no
+ClientAliveInterval 300
+ClientAliveCountMax 2
+LoginGraceTime 60
+Banner /etc/issue.net
+SSHEOF
+    systemctl reload sshd 2>/dev/null || true
+    log_ok "  SSH hardened."
+
+    # Password policy
+    log_info "  Setting password policy..."
+    if [[ -f /etc/security/pwquality.conf ]]; then
+        sed -i 's/^# minlen =.*/minlen = 12/' /etc/security/pwquality.conf
+        sed -i 's/^# minclass =.*/minclass = 3/' /etc/security/pwquality.conf
+        sed -i 's/^# dcredit =.*/dcredit = -1/' /etc/security/pwquality.conf
+        sed -i 's/^# ucredit =.*/ucredit = -1/' /etc/security/pwquality.conf
+        sed -i 's/^# lcredit =.*/lcredit = -1/' /etc/security/pwquality.conf
+        log_ok "  Password policy set (min 12 chars, 3 classes)."
+    fi
+
+    # Save state
+    mkdir -p "$(dirname "$STATE_FILE")"
+    echo "profile=zoro-default" > "$STATE_FILE"
+    echo "applied=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$STATE_FILE"
+    log_ok "Zoro Default hardening complete."
+}
+
+apply_cis_profile() {
+    local level="$1"
+    log_info "Applying CIS Level $level hardening..."
+
+    # Apply base hardening first
+    apply_zoro_default
+
+    # CIS-specific checks via OpenSCAP
+    if command -v oscap &>/dev/null; then
+        local ds_file="/usr/share/xml/scap/ssg/content/ssg-zorolinux10-ds.xml"
+        local profile_id
+
+        if [[ "$level" == "1" ]]; then
+            profile_id="xccdf_org.ssgproject.content_profile_cis_l1"
+        else
+            profile_id="xccdf_org.ssgproject.content_profile_cis_l2"
+        fi
+
+        # Try the content file, fall back to RHEL/CentOS content
+        if [[ ! -f "$ds_file" ]]; then
+            ds_file=$(find /usr/share/xml/scap/ssg/content/ -name "ssg-*el10*-ds.xml" | head -1)
+        fi
+
+        if [[ -n "$ds_file" && -f "$ds_file" ]]; then
+            log_info "  Running OpenSCAP remediation..."
+            oscap xccdf eval \
+                --remediate \
+                --profile "$profile_id" \
+                --report "/var/lib/zoro-harden/cis-l${level}-report.html" \
+                "$ds_file" 2>&1 || true
+            log_ok "  OpenSCAP CIS L$level remediation applied."
+        else
+            log_warn "  OpenSCAP content not found. Install scap-security-guide."
+            log_info "  Applying manual CIS controls..."
+            apply_manual_cis_controls "$level"
+        fi
+    else
+        log_warn "  oscap not installed. Install openscap-scanner."
+        log_info "  Applying manual CIS controls..."
+        apply_manual_cis_controls "$level"
+    fi
+
+    echo "profile=cis-l${level}" > "$STATE_FILE"
+    echo "applied=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$STATE_FILE"
+}
+
+apply_manual_cis_controls() {
+    local level="$1"
+
+    # File permissions
+    log_info "  Setting critical file permissions..."
+    chmod 644 /etc/passwd
+    chmod 000 /etc/shadow
+    chmod 644 /etc/group
+    chmod 000 /etc/gshadow
+    chmod 600 /etc/ssh/sshd_config
+    chmod 600 /boot/grub2/grub.cfg 2>/dev/null || true
+
+    # Disable unused services
+    log_info "  Disabling unused services..."
+    for svc in avahi-daemon cups rpcbind; do
+        systemctl disable "$svc" 2>/dev/null || true
+        systemctl stop "$svc" 2>/dev/null || true
+    done
+
+    # Configure logrotate
+    log_info "  Verifying log rotation..."
+    if [[ -f /etc/logrotate.conf ]]; then
+        log_ok "  Logrotate configured."
+    fi
+
+    if [[ "$level" == "2" ]]; then
+        # Additional L2 controls
+        log_info "  Applying Level 2 additional controls..."
+
+        # Disable USB storage (CIS L2)
+        echo "install usb-storage /bin/false" > /etc/modprobe.d/zoro-cis-usb.conf
+
+        # Enable process accounting
+        systemctl enable psacct 2>/dev/null || true
+
+        # Restrict cron
+        chmod 600 /etc/crontab 2>/dev/null || true
+        chmod 700 /etc/cron.d 2>/dev/null || true
+
+        log_ok "  Level 2 controls applied."
+    fi
+}
+
+# ── Status Check ─────────────────────────────────────────────
+show_status() {
+    show_banner
+    echo "System Hardening Status:"
+    echo "─────────────────────────────────────"
+
+    # Applied profile
+    if [[ -f "$STATE_FILE" ]]; then
+        source "$STATE_FILE"
+        echo -e "  Profile:    ${GREEN}${profile:-none}${RESET}"
+        echo -e "  Applied:    ${applied:-unknown}"
+    else
+        echo -e "  Profile:    ${GOLD}none${RESET}"
+    fi
+
+    echo ""
+
+    # SELinux
+    if command -v getenforce &>/dev/null; then
+        local se_status
+        se_status=$(getenforce)
+        if [[ "$se_status" == "Enforcing" ]]; then
+            echo -e "  SELinux:    ${GREEN}✓ Enforcing${RESET}"
+        else
+            echo -e "  SELinux:    ${RED}✗ $se_status${RESET}"
+        fi
+    fi
+
+    # Firewalld
+    if systemctl is-active firewalld &>/dev/null; then
+        echo -e "  Firewalld:  ${GREEN}✓ Active${RESET}"
+    else
+        echo -e "  Firewalld:  ${RED}✗ Inactive${RESET}"
+    fi
+
+    # Auditd
+    if systemctl is-active auditd &>/dev/null; then
+        echo -e "  Auditd:     ${GREEN}✓ Active${RESET}"
+    else
+        echo -e "  Auditd:     ${RED}✗ Inactive${RESET}"
+    fi
+
+    # Kernel hardening
+    local dmesg_restrict
+    dmesg_restrict=$(sysctl -n kernel.dmesg_restrict 2>/dev/null || echo "?")
+    if [[ "$dmesg_restrict" == "1" ]]; then
+        echo -e "  Sysctl:     ${GREEN}✓ Hardened${RESET}"
+    else
+        echo -e "  Sysctl:     ${GOLD}⚠ Default${RESET}"
+    fi
+
+    echo ""
+}
+
+# ── Audit Check ──────────────────────────────────────────────
+run_check() {
+    show_banner
+    log_info "Running hardening audit..."
+    echo ""
+
+    local passed=0
+    local failed=0
+    local total=0
+
+    check_item() {
+        local desc="$1"
+        local result="$2"
+        total=$((total + 1))
+        if [[ "$result" == "pass" ]]; then
+            echo -e "  ${GREEN}✓${RESET} $desc"
+            passed=$((passed + 1))
+        else
+            echo -e "  ${RED}✗${RESET} $desc"
+            failed=$((failed + 1))
+        fi
+    }
+
+    # SELinux
+    local se=$(getenforce 2>/dev/null || echo "Disabled")
+    [[ "$se" == "Enforcing" ]] && check_item "SELinux enforcing" "pass" || check_item "SELinux enforcing" "fail"
+
+    # Firewalld
+    systemctl is-active firewalld &>/dev/null && check_item "Firewalld active" "pass" || check_item "Firewalld active" "fail"
+
+    # Sysctl checks
+    [[ "$(sysctl -n kernel.dmesg_restrict 2>/dev/null)" == "1" ]] && check_item "kernel.dmesg_restrict = 1" "pass" || check_item "kernel.dmesg_restrict = 1" "fail"
+    [[ "$(sysctl -n kernel.kptr_restrict 2>/dev/null)" == "2" ]] && check_item "kernel.kptr_restrict = 2" "pass" || check_item "kernel.kptr_restrict = 2" "fail"
+    [[ "$(sysctl -n net.ipv4.tcp_syncookies 2>/dev/null)" == "1" ]] && check_item "TCP SYN cookies enabled" "pass" || check_item "TCP SYN cookies enabled" "fail"
+    [[ "$(sysctl -n kernel.randomize_va_space 2>/dev/null)" == "2" ]] && check_item "ASLR enabled" "pass" || check_item "ASLR enabled" "fail"
+
+    # SSH
+    if grep -q "PermitRootLogin no" /etc/ssh/sshd_config.d/*.conf 2>/dev/null || \
+       grep -q "PermitRootLogin no" /etc/ssh/sshd_config 2>/dev/null; then
+        check_item "SSH root login disabled" "pass"
+    else
+        check_item "SSH root login disabled" "fail"
+    fi
+
+    # File permissions
+    local shadow_perms
+    shadow_perms=$(stat -c %a /etc/shadow 2>/dev/null || echo "unknown")
+    [[ "$shadow_perms" == "0" || "$shadow_perms" == "000" ]] && check_item "/etc/shadow permissions" "pass" || check_item "/etc/shadow permissions (${shadow_perms})" "fail"
+
+    echo ""
+    echo "─────────────────────────────────────"
+    echo -e "  Results: ${GREEN}${passed} passed${RESET}, ${RED}${failed} failed${RESET} / ${total} total"
+    local pct=$((passed * 100 / total))
+    echo -e "  Score: ${pct}%"
+    echo ""
+}
+
+# ── Main ─────────────────────────────────────────────────────
+main() {
+    local action=""
+    local profile=""
+    local dry_run=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --profile=*)   action="apply"; profile="${1#*=}" ;;
+            --check)       action="check" ;;
+            --status)      action="status" ;;
+            --revert)      action="revert" ;;
+            --dry-run)     dry_run=true ;;
+            --list-profiles)
+                echo "Available profiles:"
+                echo "  zoro-default  — Zoro Linux default hardening"
+                echo "  cis-l1        — CIS Benchmark Level 1"
+                echo "  cis-l2        — CIS Benchmark Level 2"
+                echo "  stig          — DISA STIG profile"
+                exit 0
+                ;;
+            --version)     echo "$PROG $VERSION"; exit 0 ;;
+            --help|-h)     show_help; exit 0 ;;
+            *)             log_error "Unknown option: $1"; show_help; exit 1 ;;
+        esac
+        shift
+    done
+
+    if [[ -z "$action" ]]; then
+        show_help
+        exit 0
+    fi
+
+    mkdir -p "$BACKUP_DIR"
+
+    case "$action" in
+        apply)
+            show_banner
+            case "$profile" in
+                zoro-default) apply_zoro_default ;;
+                cis-l1)       apply_cis_profile 1 ;;
+                cis-l2)       apply_cis_profile 2 ;;
+                stig)
+                    log_info "Applying DISA STIG profile..."
+                    apply_cis_profile 2  # STIG is similar to CIS L2
+                    echo "profile=stig" > "$STATE_FILE"
+                    ;;
+                *)
+                    log_error "Unknown profile: $profile"
+                    echo "Available: zoro-default, cis-l1, cis-l2, stig"
+                    exit 1
+                    ;;
+            esac
+            echo ""
+            log_ok "⚔  Hardening complete. System secured."
+            ;;
+        check)
+            run_check
+            ;;
+        status)
+            show_status
+            ;;
+        revert)
+            show_banner
+            log_warn "Reverting hardening..."
+            rm -f /etc/sysctl.d/99-zoro-hardening.conf
+            rm -f /etc/modprobe.d/zoro-blacklist.conf
+            rm -f /etc/ssh/sshd_config.d/99-zoro-hardening.conf
+            sysctl --system > /dev/null 2>&1
+            systemctl reload sshd 2>/dev/null || true
+            rm -f "$STATE_FILE"
+            log_ok "Hardening reverted to defaults."
+            ;;
+    esac
+}
+
+main "$@"

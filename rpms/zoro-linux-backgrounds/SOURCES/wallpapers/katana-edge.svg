@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- Katana Edge — Single bold diagonal slash across dark -->
+  <defs>
+    <linearGradient id="bgK" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#0D1117"/>
+    </linearGradient>
+    <linearGradient id="slashGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#52B788" stop-opacity="0"/>
+      <stop offset="35%" stop-color="#52B788" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#F5F5F0" stop-opacity="0.2"/>
+      <stop offset="65%" stop-color="#52B788" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#52B788" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="slashBlur">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <rect width="3840" height="2160" fill="url(#bgK)"/>
+
+  <!-- The slash — diagonal from bottom-left to top-right -->
+  <line x1="-200" y1="2360" x2="4040" y2="-200" stroke="url(#slashGrad)" stroke-width="4" filter="url(#slashBlur)"/>
+  <line x1="-200" y1="2360" x2="4040" y2="-200" stroke="#F5F5F0" stroke-width="1" opacity="0.06"/>
+
+  <!-- Impact sparks at centre -->
+  <circle cx="1920" cy="1080" r="2" fill="#C9A84C" opacity="0.2"/>
+  <circle cx="1930" cy="1070" r="1" fill="#C9A84C" opacity="0.15"/>
+  <circle cx="1910" cy="1090" r="1" fill="#52B788" opacity="0.1"/>
+
+  <!-- Minimal vignette -->
+  <radialGradient id="vigK" cx="50%" cy="50%" r="70%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.3"/>
+  </radialGradient>
+  <rect width="3840" height="2160" fill="url(#vigK)"/>
+</svg>

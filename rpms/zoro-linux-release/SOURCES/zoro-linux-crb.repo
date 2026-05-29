@@ -1,0 +1,9 @@
+[zoro-crb]
+name=Zoro Linux $releasever - CRB (CodeReady Builder)
+baseurl=https://mirror.zorolinux.org/$releasever/CRB/$basearch/os/
+#mirrorlist=https://mirrors.zorolinux.org/mirrorlist?repo=crb-$releasever&arch=$basearch
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-zorolinux
+enabled=0
+countme=1
+metadata_expire=6h

@@ -1,0 +1,16 @@
+# ═══════════════════════════════════════════════════════════════
+# Zoro Linux 10 — GRUB2 Default Configuration
+# /etc/default/grub
+# ═══════════════════════════════════════════════════════════════
+
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="Zoro Linux"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+GRUB_TERMINAL_OUTPUT="gfxterm"
+GRUB_CMDLINE_LINUX="rhgb quiet"
+GRUB_DISABLE_RECOVERY="true"
+GRUB_THEME="/boot/grub2/themes/zorolinux/theme.txt"
+GRUB_BACKGROUND="/boot/grub2/themes/zorolinux/background.png"
+GRUB_GFXMODE="auto"
+GRUB_GFXPAYLOAD_LINUX="keep"

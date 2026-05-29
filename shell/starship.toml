@@ -1,0 +1,110 @@
+# ═══════════════════════════════════════════════════════════════
+# Zoro Linux 10 — Starship Configuration
+# ~/.config/starship.toml
+# ═══════════════════════════════════════════════════════════════
+# For users who prefer Starship prompt (https://starship.rs)
+# Matches the Zoro prompt aesthetic.
+# ═══════════════════════════════════════════════════════════════
+
+# General
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Timeout for commands
+command_timeout = 500
+
+# ── Character (prompt symbol) ────────────────────────────────
+[character]
+success_symbol = "[❯](bold #52B788)"
+error_symbol = "[✗](bold red)"
+vimcmd_symbol = "[⚔](bold #C9A84C)"
+
+# ── Username ─────────────────────────────────────────────────
+[username]
+style_user = "bold #F5F5F0 bg:#2D6A4F"
+style_root = "bold #FF5555 bg:#2D6A4F"
+format = "[ ⚔ $user]($style)"
+show_always = true
+
+# ── Hostname ─────────────────────────────────────────────────
+[hostname]
+ssh_only = false
+format = "[@$hostname ]($style)"
+style = "bold #F5F5F0 bg:#2D6A4F"
+
+# ── Directory ────────────────────────────────────────────────
+[directory]
+format = "[ $path ]($style)"
+style = "bold #C9A84C"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "📄"
+"Downloads" = "📥"
+"Projects" = "🗡"
+
+# ── Git Branch ───────────────────────────────────────────────
+[git_branch]
+format = "[[$symbol$branch](bold #A8B5C8)]($style) "
+symbol = " "
+style = "#A8B5C8"
+
+# ── Git Status ───────────────────────────────────────────────
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "#A8B5C8"
+stashed = "📦"
+modified = "✗"
+staged = "●"
+untracked = "?"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+
+# ── Command Duration ─────────────────────────────────────────
+[cmd_duration]
+format = "[⏱ $duration]($style) "
+style = "#8B6914"
+min_time = 2000
+
+# ── Language Indicators ──────────────────────────────────────
+[golang]
+format = "[$symbol($version )]($style)"
+symbol = "🗡 "
+style = "#52B788"
+
+[python]
+format = "[$symbol$pyenv_prefix($version )(($virtualenv) )]($style)"
+symbol = "🐍 "
+style = "#C9A84C"
+
+[rust]
+format = "[$symbol($version )]($style)"
+symbol = "⚙ "
+style = "#A8B5C8"
+
+[nodejs]
+format = "[$symbol($version )]($style)"
+symbol = "⬢ "
+style = "#52B788"
+
+# ── Package Version ──────────────────────────────────────────
+[package]
+format = "[$symbol$version]($style) "
+symbol = "📦 "
+style = "#C9A84C"
+
+# ── Time ─────────────────────────────────────────────────────
+[time]
+disabled = false
+format = "[$time]($style) "
+style = "#A8B5C8"
+time_format = "%H:%M"

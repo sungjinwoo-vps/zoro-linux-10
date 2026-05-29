@@ -1,0 +1,328 @@
+/* ═══════════════════════════════════════════════════════════════
+ * ZoroDeck — GNOME Shell Theme for Zoro Linux 10
+ * /usr/share/gnome-shell/theme/ZoroDeck/gnome-shell.css
+ * ═══════════════════════════════════════════════════════════════ */
+
+/* ── Stage (Desktop Background) ──────────────────────────────── */
+stage {
+    color: #F5F5F0;
+    font-family: Inter, 'Noto Sans', sans-serif;
+    font-size: 11pt;
+}
+
+/* ── Top Panel ───────────────────────────────────────────────── */
+#panel {
+    background-color: rgba(26, 58, 42, 0.85);
+    border-bottom: 1px solid rgba(82, 183, 136, 0.2);
+    font-weight: bold;
+    height: 32px;
+    color: #F5F5F0;
+    transition-duration: 250ms;
+}
+
+#panel:overview,
+#panel.unlock-screen {
+    background-color: rgba(13, 17, 23, 0.95);
+}
+
+/* Panel button styling */
+#panel .panel-button {
+    -natural-hpadding: 12px;
+    -minimum-hpadding: 6px;
+    color: #A8B5C8;
+    transition-duration: 200ms;
+}
+
+#panel .panel-button:hover {
+    color: #F5F5F0;
+    background-color: rgba(82, 183, 136, 0.15);
+}
+
+#panel .panel-button:active,
+#panel .panel-button:checked {
+    color: #52B788;
+    background-color: rgba(82, 183, 136, 0.2);
+    box-shadow: inset 0 -2px 0 0 #52B788;
+}
+
+/* Activities button — 3-blade logo */
+#panel .panel-button#activities {
+    color: #52B788;
+    font-weight: bold;
+}
+
+#panel .panel-button#activities:hover {
+    color: #F5F5F0;
+    text-shadow: 0 0 8px rgba(82, 183, 136, 0.5);
+}
+
+/* Clock */
+#panel .clock-display {
+    color: #F5F5F0;
+}
+
+/* ── Overview ────────────────────────────────────────────────── */
+#overview {
+    spacing: 24px;
+}
+
+.workspace-thumbnails {
+    spacing: 8px;
+    padding: 8px;
+}
+
+/* Workspace thumbnail border — katana-edge */
+.workspace-thumbnail-indicator {
+    border: 1px solid rgba(82, 183, 136, 0.4);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.workspace-thumbnail-indicator:active {
+    border-color: #52B788;
+    box-shadow: 0 0 8px rgba(82, 183, 136, 0.3);
+}
+
+/* ── App Grid ────────────────────────────────────────────────── */
+.app-well-app .overview-icon {
+    border-radius: 16px;
+    padding: 8px;
+    transition-duration: 200ms;
+}
+
+.app-well-app:hover .overview-icon {
+    background-color: rgba(82, 183, 136, 0.15);
+}
+
+.app-well-app:active .overview-icon {
+    background-color: rgba(82, 183, 136, 0.3);
+}
+
+/* Dash */
+#dash {
+    background-color: rgba(13, 17, 23, 0.85);
+    border: 1px solid rgba(82, 183, 136, 0.15);
+    border-radius: 16px;
+    padding: 4px 8px;
+    margin-bottom: 12px;
+}
+
+#dash .dash-separator {
+    width: 1px;
+    margin: 8px 4px;
+    background-color: rgba(82, 183, 136, 0.3);
+}
+
+/* Dash show-apps button */
+#dash .show-apps .overview-icon {
+    background-color: rgba(45, 106, 79, 0.4);
+    border-radius: 12px;
+}
+
+#dash .show-apps:hover .overview-icon {
+    background-color: rgba(82, 183, 136, 0.3);
+}
+
+/* ── Search ──────────────────────────────────────────────────── */
+#searchEntry {
+    background-color: rgba(13, 17, 23, 0.7);
+    border: 1px solid rgba(82, 183, 136, 0.3);
+    border-radius: 24px;
+    color: #F5F5F0;
+    padding: 8px 16px;
+    caret-color: #52B788;
+    selection-background-color: rgba(82, 183, 136, 0.3);
+}
+
+#searchEntry:focus {
+    border-color: #52B788;
+    box-shadow: 0 0 0 2px rgba(82, 183, 136, 0.2);
+}
+
+/* ── Popup Menus ─────────────────────────────────────────────── */
+.popup-menu {
+    color: #F5F5F0;
+}
+
+.popup-menu-content {
+    background-color: rgba(13, 17, 23, 0.95);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.popup-menu-item {
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition-duration: 150ms;
+    color: #F5F5F0;
+}
+
+.popup-menu-item:hover,
+.popup-menu-item:focus {
+    background-color: rgba(45, 106, 79, 0.4);
+    color: #F5F5F0;
+}
+
+.popup-menu-item:active {
+    background-color: rgba(82, 183, 136, 0.3);
+}
+
+.popup-separator-menu-item .popup-separator-menu-item-separator {
+    height: 1px;
+    background-color: rgba(82, 183, 136, 0.15);
+}
+
+/* ── Notifications (Dojo style) ──────────────────────────────── */
+.notification {
+    background-color: rgba(26, 58, 42, 0.95);
+    border: 1px solid rgba(82, 183, 136, 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #F5F5F0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    margin: 4px;
+}
+
+.notification .notification-title {
+    color: #C9A84C;
+    font-weight: bold;
+}
+
+.notification .notification-body {
+    color: #F5F5F0;
+}
+
+.notification-banner {
+    background-color: rgba(26, 58, 42, 0.95);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 12px;
+}
+
+/* ── Message List ────────────────────────────────────────────── */
+.message-list-section-title {
+    color: #C9A84C;
+    font-weight: bold;
+}
+
+.message {
+    background-color: rgba(26, 58, 42, 0.6);
+    border-radius: 8px;
+    margin: 4px;
+    padding: 8px;
+}
+
+.message:hover {
+    background-color: rgba(45, 106, 79, 0.5);
+}
+
+/* ── Calendar ────────────────────────────────────────────────── */
+.calendar {
+    background-color: rgba(13, 17, 23, 0.9);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.calendar .calendar-day-heading {
+    color: #C9A84C;
+    font-weight: bold;
+}
+
+.calendar .calendar-day {
+    border-radius: 50%;
+    color: #F5F5F0;
+}
+
+.calendar .calendar-day:hover {
+    background-color: rgba(82, 183, 136, 0.2);
+}
+
+.calendar .calendar-today {
+    background-color: #52B788;
+    color: #0D1117;
+    font-weight: bold;
+}
+
+/* ── OSD (On-Screen Display) ─────────────────────────────────── */
+.osd {
+    background-color: rgba(13, 17, 23, 0.85);
+    border: 1px solid rgba(82, 183, 136, 0.2);
+    border-radius: 12px;
+    color: #F5F5F0;
+    padding: 12px;
+}
+
+/* Volume / Brightness OSD */
+.level {
+    -barlevel-height: 6px;
+    -barlevel-background-color: rgba(168, 181, 200, 0.15);
+    -barlevel-active-background-color: #52B788;
+    -barlevel-overdrive-color: #C9A84C;
+    -barlevel-border-width: 0;
+    -barlevel-border-color: transparent;
+    border-radius: 100px;
+}
+
+/* ── Login / Lock Screen ─────────────────────────────────────── */
+.login-dialog,
+.unlock-dialog {
+    background-color: rgba(13, 17, 23, 0.9);
+}
+
+.login-dialog .modal-dialog-button-box .modal-dialog-button {
+    background-color: #2D6A4F;
+    border-radius: 18px;
+    color: #F5F5F0;
+    padding: 8px 24px;
+}
+
+.login-dialog .modal-dialog-button-box .modal-dialog-button:hover {
+    background-color: #52B788;
+    color: #0D1117;
+}
+
+/* Password entry on lock screen */
+.login-dialog StEntry,
+.unlock-dialog StEntry {
+    background-color: rgba(13, 17, 23, 0.7);
+    border: 2px solid rgba(82, 183, 136, 0.4);
+    border-radius: 24px;
+    color: #F5F5F0;
+    padding: 8px 16px;
+    caret-color: #52B788;
+}
+
+.login-dialog StEntry:focus,
+.unlock-dialog StEntry:focus {
+    border-color: #52B788;
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.2);
+}
+
+/* ── Quick Settings ──────────────────────────────────────────── */
+.quick-toggle {
+    background-color: rgba(45, 106, 79, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    color: #F5F5F0;
+}
+
+.quick-toggle:checked {
+    background-color: rgba(82, 183, 136, 0.4);
+}
+
+.quick-toggle:hover {
+    background-color: rgba(45, 106, 79, 0.5);
+}
+
+/* ── Loading animation (blade slash) ─────────────────────────── */
+@keyframes blade-slash {
+    0%   { opacity: 0.3; transform: translateX(-10px) rotate(-5deg); }
+    50%  { opacity: 1.0; transform: translateX(0) rotate(0deg); }
+    100% { opacity: 0.3; transform: translateX(10px) rotate(5deg); }
+}
+
+.loading-spinner {
+    animation: blade-slash 1.2s ease-in-out infinite;
+}

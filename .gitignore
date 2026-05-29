@@ -1,0 +1,42 @@
+# ═══════════════════════════════════════════════════
+# Zoro Linux 10 — .gitignore
+# ═══════════════════════════════════════════════════
+
+# Build output (compiled RPM binaries, not source specs)
+/srv/
+*.srpm
+*.iso
+*.img
+
+# rpmbuild output directories
+/rpmbuild/
+/BUILD/
+/BUILDROOT/
+/RPMS/
+/SRPMS/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+/tmp/
+
+# Logs
+*.log
+/var/log/antigravity/
+
+# GPG keys (never commit private keys)
+*.gpg
+*.asc
+!rpms/zoro-linux-release/SOURCES/RPM-GPG-KEY-zorolinux
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace

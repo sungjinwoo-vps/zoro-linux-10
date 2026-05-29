@@ -1,0 +1,15 @@
+[SddmGreeterTheme]
+Name=ZoroDojo
+Description=Zoro Linux SDDM login theme — dark green with blade accents
+Author=Zoro Linux Project
+Website=https://zorolinux.org
+License=GPLv2
+Type=sddm-theme
+Screenshot=preview.png
+
+[General]
+background=/usr/share/backgrounds/zorolinux/the-vow.png
+primaryColor=#52B788
+accentColor=#C9A84C
+textColor=#F5F5F0
+backgroundColor=#0D1117

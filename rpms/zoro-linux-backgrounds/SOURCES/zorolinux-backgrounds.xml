@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ═══════════════════════════════════════════════════════════
+     Zoro Linux 10 — Wallpaper Collection Descriptor
+     GNOME Background Properties XML
+     ═══════════════════════════════════════════════════════════ -->
+<wallpapers>
+
+  <wallpaper deleted="false">
+    <name>The Vow — Zoro Linux Default</name>
+    <filename>/usr/share/backgrounds/zorolinux/the-vow.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/the-vow.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Santoryu Flow</name>
+    <filename>/usr/share/backgrounds/zorolinux/santoryu-flow.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/santoryu-flow.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Dojo Floor</name>
+    <filename>/usr/share/backgrounds/zorolinux/dojo-floor.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/dojo-floor.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#1A3A2A</pcolor>
+    <scolor>#0D1117</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Three Blades</name>
+    <filename>/usr/share/backgrounds/zorolinux/three-blades.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/three-blades.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Blade Silver</name>
+    <filename>/usr/share/backgrounds/zorolinux/blade-silver.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/blade-silver.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#1A1A1A</pcolor>
+    <scolor>#2D2D2D</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Forest Deep</name>
+    <filename>/usr/share/backgrounds/zorolinux/forest-deep.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/forest-deep.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Katana Edge</name>
+    <filename>/usr/share/backgrounds/zorolinux/katana-edge.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/katana-edge.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Wado Ichimonji</name>
+    <filename>/usr/share/backgrounds/zorolinux/wado-ichimonji.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/wado-ichimonji.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Dawn Training</name>
+    <filename>/usr/share/backgrounds/zorolinux/dawn-training.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/dawn-training.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+  <wallpaper deleted="false">
+    <name>Nothing Happened</name>
+    <filename>/usr/share/backgrounds/zorolinux/nothing-happened.svg</filename>
+    <filename-dark>/usr/share/backgrounds/zorolinux/nothing-happened.svg</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0D1117</pcolor>
+    <scolor>#1A3A2A</scolor>
+  </wallpaper>
+
+</wallpapers>

@@ -1,0 +1,16 @@
+NAME='Zoro Linux'
+VERSION='10 (Santoryu Edition)'
+ID=zorolinux
+ID_LIKE="rhel fedora"
+VERSION_ID=10
+PLATFORM_ID="platform:el10"
+PRETTY_NAME='Zoro Linux 10 (Santoryu Edition)'
+ANSI_COLOR='0;32'
+LOGO=zoro-linux
+CPE_NAME='cpe:/o:zorolinux:zorolinux:10'
+HOME_URL='https://zorolinux.org'
+BUG_REPORT_URL='https://bugs.zorolinux.org'
+SUPPORT_URL='https://forums.zorolinux.org'
+DOCUMENTATION_URL='https://docs.zorolinux.org'
+VARIANT='Santoryu Edition'
+VARIANT_ID=santoryu

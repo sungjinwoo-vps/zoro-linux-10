@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- Forest Deep — Layered green depth with tree-like vertical lines -->
+  <defs>
+    <linearGradient id="bgF" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="60%" stop-color="#1A3A2A"/>
+      <stop offset="100%" stop-color="#0D1117"/>
+    </linearGradient>
+  </defs>
+  <rect width="3840" height="2160" fill="url(#bgF)"/>
+
+  <!-- Tree-like vertical lines at varying opacities (forest silhouettes) -->
+  <line x1="200" y1="0" x2="200" y2="2160" stroke="#2D6A4F" stroke-width="3" opacity="0.06"/>
+  <line x1="450" y1="0" x2="450" y2="2160" stroke="#2D6A4F" stroke-width="5" opacity="0.04"/>
+  <line x1="680" y1="0" x2="680" y2="2160" stroke="#2D6A4F" stroke-width="2" opacity="0.08"/>
+  <line x1="920" y1="0" x2="920" y2="2160" stroke="#2D6A4F" stroke-width="4" opacity="0.05"/>
+  <line x1="1200" y1="0" x2="1200" y2="2160" stroke="#52B788" stroke-width="1.5" opacity="0.06"/>
+  <line x1="1500" y1="0" x2="1500" y2="2160" stroke="#2D6A4F" stroke-width="6" opacity="0.03"/>
+  <line x1="1800" y1="0" x2="1800" y2="2160" stroke="#2D6A4F" stroke-width="2" opacity="0.07"/>
+  <line x1="2100" y1="0" x2="2100" y2="2160" stroke="#52B788" stroke-width="1" opacity="0.05"/>
+  <line x1="2400" y1="0" x2="2400" y2="2160" stroke="#2D6A4F" stroke-width="4" opacity="0.04"/>
+  <line x1="2700" y1="0" x2="2700" y2="2160" stroke="#2D6A4F" stroke-width="3" opacity="0.06"/>
+  <line x1="2950" y1="0" x2="2950" y2="2160" stroke="#2D6A4F" stroke-width="5" opacity="0.03"/>
+  <line x1="3200" y1="0" x2="3200" y2="2160" stroke="#52B788" stroke-width="1.5" opacity="0.05"/>
+  <line x1="3500" y1="0" x2="3500" y2="2160" stroke="#2D6A4F" stroke-width="2" opacity="0.07"/>
+
+  <!-- Ground fog -->
+  <linearGradient id="fogF" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#52B788" stop-opacity="0"/>
+    <stop offset="80%" stop-color="#52B788" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#52B788" stop-opacity="0.03"/>
+  </linearGradient>
+  <rect width="3840" height="2160" fill="url(#fogF)"/>
+
+  <!-- Vignette -->
+  <radialGradient id="vigF" cx="50%" cy="50%" r="65%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.45"/>
+  </radialGradient>
+  <rect width="3840" height="2160" fill="url(#vigF)"/>
+</svg>

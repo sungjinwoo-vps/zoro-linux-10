@@ -1,0 +1,186 @@
+// ═══════════════════════════════════════════════════════════════
+// Zoro Linux 10 — Plymouth Boot Animation Script
+// /usr/share/plymouth/themes/zorolinux/zorolinux.script
+// ═══════════════════════════════════════════════════════════════
+// Three-blade logo assembles from three directions.
+// Progress bar: green fill, gold glow on complete.
+// ═══════════════════════════════════════════════════════════════
+
+// ── Window Setup ────────────────────────────────────────────
+Window.SetBackgroundTopColor(0.05, 0.07, 0.09);     // #0D1117 Midnight Black
+Window.SetBackgroundBottomColor(0.10, 0.23, 0.16);   // #1A3A2A Deep Forest
+
+// ── Load Assets ─────────────────────────────────────────────
+logo = Image("zoro-linux-logo.png");
+sword_left = Image("sword-left.png");
+sword_right = Image("sword-right.png");
+sword_top = Image("sword-top.png");
+progress_bg = Image("progress-bg.png");
+progress_fill = Image("progress-fill.png");
+
+// ── Centre Coordinates ──────────────────────────────────────
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+centre_x = screen_width / 2;
+centre_y = screen_height / 2;
+
+// ── Logo Sprite ─────────────────────────────────────────────
+logo_sprite = Sprite(logo);
+logo_width = logo.GetWidth();
+logo_height = logo.GetHeight();
+logo_x = centre_x - logo_width / 2;
+logo_y = centre_y - logo_height / 2 - 40;
+logo_sprite.SetPosition(logo_x, logo_y, 10);
+logo_sprite.SetOpacity(0);
+
+// ── Sword Sprites (assemble from three directions) ──────────
+sword_left_sprite = Sprite(sword_left);
+sword_left_sprite.SetPosition(-200, centre_y - sword_left.GetHeight() / 2 - 40, 5);
+sword_left_sprite.SetOpacity(0.8);
+
+sword_right_sprite = Sprite(sword_right);
+sword_right_sprite.SetPosition(screen_width + 200, centre_y - sword_right.GetHeight() / 2 - 40, 5);
+sword_right_sprite.SetOpacity(0.8);
+
+sword_top_sprite = Sprite(sword_top);
+sword_top_sprite.SetPosition(centre_x - sword_top.GetWidth() / 2, -200, 5);
+sword_top_sprite.SetOpacity(0.8);
+
+// ── Progress Bar ────────────────────────────────────────────
+progress_bar_width = 300;
+progress_bar_height = 4;
+progress_bar_x = centre_x - progress_bar_width / 2;
+progress_bar_y = centre_y + logo_height / 2 + 40;
+
+// Progress background (dark green bar)
+progress_bg_sprite = Sprite();
+progress_bg_sprite.SetPosition(progress_bar_x, progress_bar_y, 2);
+
+// Progress fill (bright green, grows with progress)
+progress_fill_sprite = Sprite();
+progress_fill_sprite.SetPosition(progress_bar_x, progress_bar_y, 3);
+
+// ── Text Label ──────────────────────────────────────────────
+text_sprite = Sprite();
+text_sprite.SetPosition(centre_x - 100, progress_bar_y + 20, 10);
+
+// ── Animation Variables ─────────────────────────────────────
+global.animation_time = 0;
+global.progress = 0;
+global.swords_assembled = 0;
+
+// ── Animation Callback ─────────────────────────────────────
+fun refresh_callback() {
+    global.animation_time += 0.02;
+
+    // Phase 1: Swords slide in (0 to 1.5 seconds)
+    if (global.animation_time < 1.5) {
+        t = global.animation_time / 1.5;  // normalise 0-1
+        ease = t * t * (3 - 2 * t);       // smoothstep
+
+        // Left sword slides right
+        sword_left_x = -200 + (logo_x - sword_left.GetWidth() / 2 + 200) * ease;
+        sword_left_sprite.SetPosition(sword_left_x,
+            centre_y - sword_left.GetHeight() / 2 - 40, 5);
+        sword_left_sprite.SetOpacity(0.3 + 0.7 * ease);
+
+        // Right sword slides left
+        sword_right_x = screen_width + 200 -
+            (screen_width + 200 - logo_x - logo_width + sword_right.GetWidth() / 2) * ease;
+        sword_right_sprite.SetPosition(sword_right_x,
+            centre_y - sword_right.GetHeight() / 2 - 40, 5);
+        sword_right_sprite.SetOpacity(0.3 + 0.7 * ease);
+
+        // Top sword slides down
+        sword_top_y = -200 + (logo_y - sword_top.GetHeight() / 2 + 200) * ease;
+        sword_top_sprite.SetPosition(centre_x - sword_top.GetWidth() / 2,
+            sword_top_y, 5);
+        sword_top_sprite.SetOpacity(0.3 + 0.7 * ease);
+    }
+
+    // Phase 2: Logo fades in (1.0 to 2.0 seconds)
+    if (global.animation_time >= 1.0 && global.animation_time < 2.0) {
+        t = (global.animation_time - 1.0) / 1.0;
+        logo_sprite.SetOpacity(t);
+
+        // Fade out individual swords as logo appears
+        if (global.animation_time >= 1.5) {
+            fade = 1.0 - (global.animation_time - 1.5) / 0.5;
+            sword_left_sprite.SetOpacity(fade);
+            sword_right_sprite.SetOpacity(fade);
+            sword_top_sprite.SetOpacity(fade);
+        }
+    }
+
+    // Phase 3: Logo fully visible
+    if (global.animation_time >= 2.0) {
+        logo_sprite.SetOpacity(1.0);
+        sword_left_sprite.SetOpacity(0);
+        sword_right_sprite.SetOpacity(0);
+        sword_top_sprite.SetOpacity(0);
+        global.swords_assembled = 1;
+    }
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
+
+// ── Boot Progress Callback ──────────────────────────────────
+fun boot_progress_callback(duration, progress) {
+    global.progress = progress;
+
+    if (global.swords_assembled) {
+        // Update progress bar
+        // Green fill: #52B788
+        fill_width = progress_bar_width * progress;
+
+        // Create progress bar using simple box images
+        progress_fill_image = Image.Text("", 0.32, 0.72, 0.53);  // Blade Green
+        progress_fill_sprite.SetImage(progress_fill_image);
+
+        // If complete (progress >= 1.0), flash gold
+        if (progress >= 0.99) {
+            // Gold glow effect: #C9A84C
+            logo_sprite.SetOpacity(0.8 + Math.Sin(global.animation_time * 4) * 0.2);
+        }
+    }
+}
+
+Plymouth.SetBootProgressFunction(boot_progress_callback);
+
+// ── Message Callback ────────────────────────────────────────
+fun message_callback(text) {
+    msg_image = Image.Text(text, 0.66, 0.71, 0.78);  // Blade Silver #A8B5C8
+    text_sprite.SetImage(msg_image);
+    text_sprite.SetPosition(centre_x - msg_image.GetWidth() / 2,
+        progress_bar_y + 20, 10);
+}
+
+Plymouth.SetMessageFunction(message_callback);
+
+// ── Password Dialog ─────────────────────────────────────────
+fun display_password_callback(prompt, bullets) {
+    bullet_string = "";
+    for (i = 0; i < bullets; i++) {
+        bullet_string += "⚔ ";
+    }
+
+    prompt_image = Image.Text(prompt, 0.96, 0.96, 0.94);  // Rice Paper
+    bullets_image = Image.Text(bullet_string, 0.32, 0.72, 0.53);  // Blade Green
+
+    prompt_sprite = Sprite(prompt_image);
+    prompt_sprite.SetPosition(centre_x - prompt_image.GetWidth() / 2,
+        centre_y + 80, 10);
+
+    bullet_sprite = Sprite(bullets_image);
+    bullet_sprite.SetPosition(centre_x - bullets_image.GetWidth() / 2,
+        centre_y + 110, 10);
+}
+
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+// ── Quit Callback ───────────────────────────────────────────
+fun quit_callback() {
+    logo_sprite.SetOpacity(0);
+}
+
+Plymouth.SetQuitFunction(quit_callback);

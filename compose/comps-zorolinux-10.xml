@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE comps PUBLIC "-//Red Hat, Inc.//DTD Comps info//EN" "comps.dtd">
+<!-- ═══════════════════════════════════════════════════════════
+     Zoro Linux 10 — Package Groups (Comps)
+     Defines package groups and installation environments.
+     ═══════════════════════════════════════════════════════════ -->
+<comps>
+
+  <!-- ── Core Group ──────────────────────────────────────────── -->
+  <group>
+    <id>core</id>
+    <name>Core</name>
+    <description>Smallest possible set of packages for a functional system.</description>
+    <default>true</default>
+    <uservisible>false</uservisible>
+    <packagelist>
+      <packagereq type="mandatory">basesystem</packagereq>
+      <packagereq type="mandatory">bash</packagereq>
+      <packagereq type="mandatory">coreutils</packagereq>
+      <packagereq type="mandatory">dnf</packagereq>
+      <packagereq type="mandatory">filesystem</packagereq>
+      <packagereq type="mandatory">glibc</packagereq>
+      <packagereq type="mandatory">kernel</packagereq>
+      <packagereq type="mandatory">rootfiles</packagereq>
+      <packagereq type="mandatory">rpm</packagereq>
+      <packagereq type="mandatory">setup</packagereq>
+      <packagereq type="mandatory">shadow-utils</packagereq>
+      <packagereq type="mandatory">systemd</packagereq>
+      <packagereq type="mandatory">util-linux</packagereq>
+      <packagereq type="mandatory">zoro-linux-release</packagereq>
+    </packagelist>
+  </group>
+
+  <!-- ── Zoro Branding Group ─────────────────────────────────── -->
+  <group>
+    <id>zoro-branding</id>
+    <name>Zoro Linux Branding</name>
+    <description>Complete Zoro Linux visual identity and branding packages.</description>
+    <default>true</default>
+    <uservisible>true</uservisible>
+    <packagelist>
+      <packagereq type="mandatory">zoro-linux-release</packagereq>
+      <packagereq type="mandatory">zoro-linux-logos</packagereq>
+      <packagereq type="default">zoro-linux-backgrounds</packagereq>
+      <packagereq type="default">zoro-linux-themes</packagereq>
+      <packagereq type="default">zoro-linux-icon-theme</packagereq>
+      <packagereq type="default">zoro-linux-cursor-theme</packagereq>
+      <packagereq type="default">zoro-linux-grub2-theme</packagereq>
+      <packagereq type="default">zoro-linux-plymouth</packagereq>
+      <packagereq type="default">zoro-fetch</packagereq>
+    </packagelist>
+  </group>
+
+  <!-- ── Zoro Desktop Extras ─────────────────────────────────── -->
+  <group>
+    <id>zoro-desktop-extras</id>
+    <name>Zoro Linux Desktop Extras</name>
+    <description>Additional Zoro-themed desktop components and tools.</description>
+    <default>false</default>
+    <uservisible>true</uservisible>
+    <packagelist>
+      <packagereq type="default">zoro-linux-kde-theme</packagereq>
+      <packagereq type="default">zoro-linux-welcome</packagereq>
+      <packagereq type="default">zoro-linux-cockpit-branding</packagereq>
+      <packagereq type="optional">zoro-linux-security-hardening</packagereq>
+    </packagelist>
+  </group>
+
+  <!-- ── Zoro Extras Repo Group ──────────────────────────────── -->
+  <group>
+    <id>zoro-extras</id>
+    <name>Zoro Linux Extras</name>
+    <description>Community-maintained extra packages for Zoro Linux.</description>
+    <default>false</default>
+    <uservisible>true</uservisible>
+    <packagelist>
+      <!-- Populated by community contributions -->
+    </packagelist>
+  </group>
+
+  <!-- ── Container Tools ─────────────────────────────────────── -->
+  <group>
+    <id>container-tools</id>
+    <name>Container Management</name>
+    <description>Tools for managing containers with Podman.</description>
+    <default>false</default>
+    <uservisible>true</uservisible>
+    <packagelist>
+      <packagereq type="mandatory">podman</packagereq>
+      <packagereq type="default">buildah</packagereq>
+      <packagereq type="default">skopeo</packagereq>
+      <packagereq type="default">crun</packagereq>
+      <packagereq type="default">containernetworking-plugins</packagereq>
+      <packagereq type="optional">cockpit-podman</packagereq>
+      <packagereq type="optional">toolbox</packagereq>
+    </packagelist>
+  </group>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ENVIRONMENTS (Installation Profiles)                        -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <!-- ── The Blade (Minimal) ─────────────────────────────────── -->
+  <environment>
+    <id>minimal-environment</id>
+    <name>The Blade — Minimal Install</name>
+    <description>Bare OS, CLI only, no GUI. The purest form of Zoro Linux — cuts away all excess.</description>
+    <display_order>10</display_order>
+    <grouplist>
+      <groupid>core</groupid>
+      <groupid>zoro-branding</groupid>
+    </grouplist>
+    <optionlist>
+      <groupid>container-tools</groupid>
+    </optionlist>
+  </environment>
+
+  <!-- ── The Strategist (Server) ─────────────────────────────── -->
+  <environment>
+    <id>server-product-environment</id>
+    <name>The Strategist — Server</name>
+    <description>Headless server with sshd, Cockpit web console, and server management tools. Strategic and reliable.</description>
+    <display_order>20</display_order>
+    <grouplist>
+      <groupid>core</groupid>
+      <groupid>zoro-branding</groupid>
+    </grouplist>
+    <optionlist>
+      <groupid>container-tools</groupid>
+      <groupid>zoro-desktop-extras</groupid>
+    </optionlist>
+  </environment>
+
+  <!-- ── The Swordsman (Workstation) ─────────────────────────── -->
+  <environment>
+    <id>workstation-product-environment</id>
+    <name>The Swordsman — Workstation</name>
+    <description>Full GNOME desktop (ZoroDeck Shell) with developer tools, themes, and visual excellence. The swordsman's daily weapon.</description>
+    <display_order>30</display_order>
+    <grouplist>
+      <groupid>core</groupid>
+      <groupid>zoro-branding</groupid>
+      <groupid>zoro-desktop-extras</groupid>
+    </grouplist>
+    <optionlist>
+      <groupid>container-tools</groupid>
+    </optionlist>
+  </environment>
+
+  <!-- ── Santoryu Full (Dojo Edition) ────────────────────────── -->
+  <environment>
+    <id>dojo-environment</id>
+    <name>Santoryu Full — Dojo Edition</name>
+    <description>Everything. GNOME + KDE + all Zoro themes, developer tools, containers, and extras. Three swords, all at once.</description>
+    <display_order>40</display_order>
+    <grouplist>
+      <groupid>core</groupid>
+      <groupid>zoro-branding</groupid>
+      <groupid>zoro-desktop-extras</groupid>
+      <groupid>container-tools</groupid>
+    </grouplist>
+    <optionlist>
+      <groupid>zoro-extras</groupid>
+    </optionlist>
+  </environment>
+
+  <!-- ── The Current (Container Host) ────────────────────────── -->
+  <environment>
+    <id>container-host-environment</id>
+    <name>The Current — Container Host</name>
+    <description>Container-optimised minimal system with Podman, crun, and CNI. Flows like water, holds like steel.</description>
+    <display_order>50</display_order>
+    <grouplist>
+      <groupid>core</groupid>
+      <groupid>zoro-branding</groupid>
+      <groupid>container-tools</groupid>
+    </grouplist>
+  </environment>
+
+</comps>

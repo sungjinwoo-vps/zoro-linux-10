@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- Santoryu Flow — Abstract flowing blades wallpaper
+       Three curved lines flowing across the screen like sword slashes -->
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="50%" stop-color="#0F1A14"/>
+      <stop offset="100%" stop-color="#0D1117"/>
+    </linearGradient>
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feFlood flood-color="#52B788" flood-opacity="0.15"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="goldGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feFlood flood-color="#C9A84C" flood-opacity="0.1"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="3840" height="2160" fill="url(#bg2)"/>
+
+  <!-- Flow line 1 — Green (Wado Ichimonji) -->
+  <path d="M-100,600 C400,300 800,800 1400,500 S2400,200 3000,700 S3600,400 3940,600"
+        fill="none" stroke="#52B788" stroke-width="2" opacity="0.4" filter="url(#glow2)"/>
+  <path d="M-100,620 C400,320 800,820 1400,520 S2400,220 3000,720 S3600,420 3940,620"
+        fill="none" stroke="#52B788" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- Flow line 2 — Silver (Sandai Kitetsu) -->
+  <path d="M-100,1100 C500,800 1000,1300 1600,1000 S2600,700 3200,1100 S3700,900 3940,1050"
+        fill="none" stroke="#A8B5C8" stroke-width="2" opacity="0.3" filter="url(#glow2)"/>
+  <path d="M-100,1120 C500,820 1000,1320 1600,1020 S2600,720 3200,1120 S3700,920 3940,1070"
+        fill="none" stroke="#A8B5C8" stroke-width="0.5" opacity="0.15"/>
+
+  <!-- Flow line 3 — Gold (Shusui) -->
+  <path d="M-100,1600 C600,1300 1200,1700 1800,1400 S2800,1200 3400,1500 S3800,1400 3940,1550"
+        fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.25" filter="url(#goldGlow)"/>
+  <path d="M-100,1620 C600,1320 1200,1720 1800,1420 S2800,1220 3400,1520 S3800,1420 3940,1570"
+        fill="none" stroke="#C9A84C" stroke-width="0.5" opacity="0.12"/>
+
+  <!-- Intersection glow points (where swords cross) -->
+  <circle cx="1400" cy="750" r="40" fill="#52B788" opacity="0.04" filter="url(#glow2)"/>
+  <circle cx="2800" cy="1000" r="35" fill="#A8B5C8" opacity="0.03"/>
+  <circle cx="2200" cy="1300" r="30" fill="#C9A84C" opacity="0.03"/>
+
+  <!-- Vignette -->
+  <radialGradient id="vig2" cx="50%" cy="50%" r="70%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+  </radialGradient>
+  <rect width="3840" height="2160" fill="url(#vig2)"/>
+</svg>

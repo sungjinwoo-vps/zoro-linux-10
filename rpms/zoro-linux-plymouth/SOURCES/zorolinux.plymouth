@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Zoro Linux
+Description=Zoro Linux 10 (Santoryu Edition) boot animation — three blades assemble
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/zorolinux
+ScriptFile=/usr/share/plymouth/themes/zorolinux/zorolinux.script

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- The Vow — Default Zoro Linux Wallpaper
+       Dark forest gradient with three subtle blade silhouettes -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="40%" stop-color="#1A3A2A"/>
+      <stop offset="70%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#0F1A14"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#2D6A4F" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#0D1117" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bladeGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#52B788" stop-opacity="0.04"/>
+      <stop offset="50%" stop-color="#A8B5C8" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#52B788" stop-opacity="0.02"/>
+    </linearGradient>
+    <filter id="blur1">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <!-- Base gradient -->
+  <rect width="3840" height="2160" fill="url(#bg)"/>
+
+  <!-- Subtle green glow from centre -->
+  <rect width="3840" height="2160" fill="url(#glow)"/>
+
+  <!-- Three blade silhouettes (very subtle) -->
+  <!-- Centre blade (vertical) -->
+  <rect x="1915" y="200" width="10" height="1200" rx="2"
+        fill="url(#bladeGrad1)" transform="rotate(0, 1920, 800)" filter="url(#blur1)"/>
+
+  <!-- Left blade (angled -25°) -->
+  <rect x="1915" y="250" width="8" height="1100" rx="2"
+        fill="url(#bladeGrad1)" transform="rotate(-25, 1920, 800)" filter="url(#blur1)"/>
+
+  <!-- Right blade (angled +25°) -->
+  <rect x="1917" y="250" width="8" height="1100" rx="2"
+        fill="url(#bladeGrad1)" transform="rotate(25, 1920, 800)" filter="url(#blur1)"/>
+
+  <!-- Subtle grid pattern (dojo floor texture) -->
+  <pattern id="dojoGrid" width="120" height="120" patternUnits="userSpaceOnUse">
+    <rect width="120" height="120" fill="none"/>
+    <line x1="0" y1="120" x2="120" y2="120" stroke="#52B788" stroke-width="0.3" opacity="0.03"/>
+    <line x1="120" y1="0" x2="120" y2="120" stroke="#52B788" stroke-width="0.3" opacity="0.03"/>
+  </pattern>
+  <rect width="3840" height="2160" fill="url(#dojoGrid)"/>
+
+  <!-- Subtle floating particles (blade sparks) -->
+  <circle cx="800" cy="400" r="1.5" fill="#52B788" opacity="0.15"/>
+  <circle cx="1200" cy="600" r="1" fill="#C9A84C" opacity="0.12"/>
+  <circle cx="2600" cy="500" r="1.5" fill="#52B788" opacity="0.1"/>
+  <circle cx="3000" cy="800" r="1" fill="#A8B5C8" opacity="0.08"/>
+  <circle cx="600" cy="1200" r="1.2" fill="#52B788" opacity="0.12"/>
+  <circle cx="1500" cy="1500" r="0.8" fill="#C9A84C" opacity="0.1"/>
+  <circle cx="3200" cy="1400" r="1.5" fill="#52B788" opacity="0.08"/>
+  <circle cx="2000" cy="1800" r="1" fill="#A8B5C8" opacity="0.12"/>
+  <circle cx="400" cy="1800" r="1.3" fill="#52B788" opacity="0.06"/>
+  <circle cx="3400" cy="300" r="0.8" fill="#C9A84C" opacity="0.1"/>
+
+  <!-- Vignette effect -->
+  <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+    <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+  </radialGradient>
+  <rect width="3840" height="2160" fill="url(#vignette)"/>
+</svg>

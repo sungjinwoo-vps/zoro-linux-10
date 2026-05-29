@@ -1,0 +1,106 @@
+.\" ═══════════════════════════════════════════════════════════════
+.\" zoro-linux(7) — Zoro Linux Overview
+.\" ═══════════════════════════════════════════════════════════════
+.TH ZORO-LINUX 7 "2026" "Zoro Linux 10" "Zoro Linux Manual"
+
+.SH NAME
+zoro\-linux \- overview of Zoro Linux 10 (Santoryu Edition)
+
+.SH DESCRIPTION
+.B Zoro Linux
+is a community-driven, enterprise-grade Linux distribution based on
+Enterprise Linux 10. It is inspired by Roronoa Zoro from One Piece \(em
+the swordsman who trains relentlessly, never breaks his vow, and cuts
+through every obstacle with three-blade precision.
+
+Zoro Linux carries the same ethos: ruthless performance, zero
+unnecessary bloat, absolute reliability, and a visual identity as
+sharp as Wado Ichimonji.
+
+.SH THE THREE BLADES PHILOSOPHY
+Zoro's Santoryu (Three-Sword Style) maps directly to Zoro Linux's
+three core pillars:
+
+.TP
+.B Wado Ichimonji \(em Stability & Honour
+LTS kernel, battle-tested packages, zero-surprise upgrades.
+
+.TP
+.B Sandai Kitetsu \(em Speed & Power
+Optimised scheduler, aggressive I/O tuning, DNF5 fast package
+manager, zstd-compressed RPMs.
+
+.TP
+.B Yubashiri / Shusui \(em Elegance & Craft
+Zoro-themed GNOME/KDE shell, custom icon set, refined fonts,
+thoughtful UX.
+
+.SH INSTALLATION PROFILES
+.TP
+.B The Blade (Minimal)
+Bare OS, CLI only, no GUI. Smallest attack surface.
+
+.TP
+.B The Strategist (Server)
+Headless, sshd, Cockpit web console, server tools.
+
+.TP
+.B The Swordsman (Workstation)
+Full GNOME desktop (ZoroDeck Shell), developer tools.
+
+.TP
+.B Santoryu Full (Dojo Edition)
+Everything: GNOME + KDE + all Zoro themes and extras.
+
+.TP
+.B The Current (Container Host)
+Podman, crun, CNI, container-optimised.
+
+.SH REPOSITORIES
+.TP
+.B zoro-baseos
+Core OS packages (enabled by default).
+
+.TP
+.B zoro-appstream
+Applications and language runtimes (enabled by default).
+
+.TP
+.B zoro-extras
+Community-maintained extras (enabled by default).
+
+.TP
+.B zoro-crb
+Code Ready Builder (disabled by default).
+
+.TP
+.B zoro-dojo
+Curated 3rd party applications (disabled by default).
+
+.SH SECURITY
+Zoro Linux ships with SELinux in enforcing mode and firewalld active.
+Additional hardening can be applied using
+.BR zoro-harden (8).
+
+.SH RESOURCES
+.TP
+Website
+https://zorolinux.org
+.TP
+Documentation
+https://docs.zorolinux.org
+.TP
+Bug Tracker
+https://bugs.zorolinux.org
+.TP
+Forums
+https://forums.zorolinux.org
+
+.SH SEE ALSO
+.BR zoro-fetch (1),
+.BR zoro-harden (8),
+.BR dnf (8),
+.BR systemctl (1)
+
+.SH AUTHOR
+The Zoro Linux Project <devel@zorolinux.org>

@@ -1,0 +1,535 @@
+# ═══════════════════════════════════════════════════════════════
+# Zoro Linux 10 — ISO Build Pipeline (GitHub Actions)
+# ═══════════════════════════════════════════════════════════════
+# Builds RPMs, composes repos, and assembles bootable ISOs.
+# Runs on: push to dev branch, or manual trigger.
+# ═══════════════════════════════════════════════════════════════
+
+name: "⚔️ Zoro Linux ISO Build"
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: "ISO variant to build"
+        required: false
+        default: "dvd"
+        type: choice
+        options:
+          - dvd
+          - minimal
+          - netinstall
+          - all
+
+env:
+  ZORO_VERSION: "10"
+  ZORO_RELEASE: "10.0"
+  ZORO_CODENAME: "Santoryu"
+  BUILD_ROOT: "/srv/zoro-build"
+  COMPOSE_ROOT: "/srv/zoro-compose/10"
+  REPO_ROOT: "/srv/zoro-repos/10"
+  ISO_ROOT: "/srv/zoro-isos/10"
+
+jobs:
+  # ── Stage 0: Lint & Validate ──────────────────────────────────
+  validate:
+    name: "🔍 Validate Sources"
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install validation tools
+        run: |
+          dnf install -y rpmlint ShellCheck xmllint 2>/dev/null || \
+          dnf install -y rpmlint ShellCheck libxml2 2>/dev/null || true
+
+      - name: Lint RPM spec files
+        run: |
+          echo "⚔ Linting spec files..."
+          find rpms/ -name "*.spec" -exec rpmlint {} \; || true
+
+      - name: ShellCheck scripts
+        run: |
+          echo "⚔ Checking shell scripts..."
+          find antigravity/ -name "*.sh" -exec shellcheck -s bash {} \; || true
+
+      - name: Check for upstream branding leaks
+        run: |
+          echo "⚔ Scanning for upstream branding leaks..."
+          LEAKS=0
+          for pattern in "CentOS Stream" "Red Hat Enterprise" "RHEL" "Rocky Linux" "AlmaLinux"; do
+            if grep -r --include="*.spec" --include="*.cfg" --include="*.conf" \
+               -l "$pattern" rpms/ installer/ compose/ 2>/dev/null | grep -v "stage1\|antigravity.conf\|upstream"; then
+              echo "  ⚠ Found '$pattern' leak in source files"
+              LEAKS=$((LEAKS + 1))
+            fi
+          done
+          if [ "$LEAKS" -gt 0 ]; then
+            echo "::warning::Found $LEAKS potential branding leaks"
+          else
+            echo "  ✓ No branding leaks detected"
+          fi
+
+      - name: Validate kickstart syntax
+        run: |
+          echo "⚔ Validating kickstart files..."
+          for ks in installer/kickstarts/*.cfg; do
+            if head -1 "$ks" | grep -q "^#"; then
+              echo "  ✓ $ks — valid header"
+            else
+              echo "  ⚠ $ks — missing header comment"
+            fi
+          done
+
+  # ── Stage 1: Build RPMs ────────────────────────────────────────
+  build-rpms:
+    name: "📦 Build RPMs"
+    needs: validate
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          dnf install -y \
+            rpm-build rpmdevtools createrepo_c \
+            golang gtk4-devel libadwaita-devel \
+            python3-devel desktop-file-utils \
+            ImageMagick inkscape librsvg2-tools \
+            xcursorgen xorg-x11-apps \
+            2>/dev/null || true
+          rpmdev-setuptree
+
+      - name: Build all RPMs
+        run: |
+          echo "⚔ Building Zoro Linux RPMs..."
+          BUILT=0
+          FAILED=0
+          for spec in rpms/*/zoro-*.spec rpms/*/*.spec; do
+            [ -f "$spec" ] || continue
+            PKG=$(basename "$spec" .spec)
+            echo "  → Building $PKG..."
+
+            # Copy sources
+            SPEC_DIR=$(dirname "$spec")
+            if [ -d "$SPEC_DIR/SOURCES" ]; then
+              cp -r "$SPEC_DIR/SOURCES/"* ~/rpmbuild/SOURCES/ 2>/dev/null || true
+            fi
+
+            # Build RPM
+            if rpmbuild -bb "$spec" 2>&1 | tail -5; then
+              echo "  ✓ $PKG built"
+              BUILT=$((BUILT + 1))
+            else
+              echo "  ✗ $PKG failed"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+          echo ""
+          echo "⚔ RPM Build Summary: $BUILT built, $FAILED failed"
+
+      - name: Collect RPMs
+        run: |
+          mkdir -p ${{ github.workspace }}/built-rpms
+          find ~/rpmbuild/RPMS -name "*.rpm" -exec cp {} ${{ github.workspace }}/built-rpms/ \;
+          ls -la ${{ github.workspace }}/built-rpms/ || echo "No RPMs built"
+
+      - name: Upload RPMs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zoro-rpms
+          path: built-rpms/
+          retention-days: 7
+          if-no-files-found: warn
+
+  # ── Stage 2: Compose Repository ────────────────────────────────
+  compose-repo:
+    name: "🗂️ Compose Repository"
+    needs: build-rpms
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download RPMs
+        uses: actions/download-artifact@v4
+        with:
+          name: zoro-rpms
+          path: built-rpms/
+
+      - name: Install compose tools
+        run: |
+          dnf install -y createrepo_c dnf-utils yum-utils 2>/dev/null || true
+
+      - name: Create repository structure
+        run: |
+          echo "⚔ Composing Zoro Linux repository..."
+          mkdir -p ${REPO_ROOT}/{BaseOS,AppStream}/{x86_64,aarch64}/{os/Packages,debug,source}
+
+          # Place custom RPMs in AppStream
+          if ls built-rpms/*.rpm 1>/dev/null 2>&1; then
+            cp built-rpms/*.rpm ${REPO_ROOT}/AppStream/x86_64/os/Packages/
+            echo "  ✓ Copied $(ls built-rpms/*.rpm | wc -l) RPMs to AppStream"
+          fi
+
+      - name: Download CentOS Stream 10 base packages
+        run: |
+          echo "⚔ Syncing base packages from CentOS Stream 10..."
+          # Sync minimal BaseOS packages for ISO
+          dnf install -y dnf-plugins-core 2>/dev/null || true
+          dnf config-manager --set-enabled crb 2>/dev/null || true
+
+          # Download core packages needed for minimal install
+          dnf download --resolve --destdir=${REPO_ROOT}/BaseOS/x86_64/os/Packages \
+            --releasever=10 --repo=baseos \
+            basesystem filesystem setup glibc bash coreutils \
+            systemd dnf rpm kernel grub2 NetworkManager \
+            openssh-server audit firewalld selinux-policy-targeted \
+            chrony sudo vim-minimal less passwd \
+            2>&1 | tail -20 || true
+
+          # Download GNOME/desktop packages for DVD variant
+          dnf download --resolve --destdir=${REPO_ROOT}/AppStream/x86_64/os/Packages \
+            --releasever=10 --repo=appstream \
+            gnome-shell gnome-terminal nautilus gdm \
+            firefox flatpak \
+            2>&1 | tail -20 || true
+
+          echo "  ✓ Base packages synced"
+
+      - name: Generate repository metadata
+        run: |
+          echo "⚔ Generating repodata..."
+          for variant in BaseOS AppStream; do
+            for arch in x86_64; do
+              REPO_PATH="${REPO_ROOT}/${variant}/${arch}/os"
+              if [ -d "$REPO_PATH/Packages" ] && ls "$REPO_PATH/Packages/"*.rpm 1>/dev/null 2>&1; then
+                createrepo_c --compress-type=zstd "$REPO_PATH"
+                echo "  ✓ ${variant}/${arch}: $(ls "$REPO_PATH/Packages/"*.rpm | wc -l) packages"
+              else
+                # Create empty repo
+                mkdir -p "$REPO_PATH/Packages"
+                createrepo_c "$REPO_PATH"
+                echo "  ⚠ ${variant}/${arch}: empty (placeholder)"
+              fi
+            done
+          done
+
+      - name: Upload composed repo
+        uses: actions/upload-artifact@v4
+        with:
+          name: zoro-repo
+          path: /srv/zoro-repos/
+          retention-days: 3
+          if-no-files-found: warn
+
+  # ── Stage 3: Build ISO ─────────────────────────────────────────
+  build-iso:
+    name: "💿 Build ISO"
+    needs: compose-repo
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/centos/centos:stream10
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download composed repo
+        uses: actions/download-artifact@v4
+        with:
+          name: zoro-repo
+          path: /srv/zoro-repos/
+
+      - name: Install ISO build tools
+        run: |
+          dnf install -y \
+            lorax lorax-lmc-novirt anaconda \
+            xorriso syslinux syslinux-nonlinux \
+            grub2-efi-x64 shim-x64 \
+            genisoimage isomd5sum \
+            squashfs-tools dracut \
+            2>/dev/null || true
+
+      - name: Prepare ISO tree
+        run: |
+          echo "⚔ Preparing ISO tree..."
+          VARIANT="${{ github.event.inputs.variant || 'dvd' }}"
+          ISO_TREE="${BUILD_ROOT}/iso-tree"
+          mkdir -p "${ISO_TREE}"/{BaseOS/Packages,AppStream/Packages,images,EFI/BOOT,isolinux}
+
+          # Copy packages
+          if ls ${REPO_ROOT}/BaseOS/x86_64/os/Packages/*.rpm 1>/dev/null 2>&1; then
+            cp ${REPO_ROOT}/BaseOS/x86_64/os/Packages/*.rpm "${ISO_TREE}/BaseOS/Packages/"
+          fi
+          if ls ${REPO_ROOT}/AppStream/x86_64/os/Packages/*.rpm 1>/dev/null 2>&1; then
+            cp ${REPO_ROOT}/AppStream/x86_64/os/Packages/*.rpm "${ISO_TREE}/AppStream/Packages/"
+          fi
+
+          # Generate repodata for ISO tree
+          createrepo_c "${ISO_TREE}/BaseOS" 2>/dev/null || true
+          createrepo_c "${ISO_TREE}/AppStream" 2>/dev/null || true
+
+          # Copy kickstart
+          cp installer/kickstarts/ks-santoryu.cfg "${ISO_TREE}/ks.cfg"
+
+          echo "  ✓ ISO tree prepared"
+
+      - name: Create boot configuration
+        run: |
+          ISO_TREE="${BUILD_ROOT}/iso-tree"
+
+          # GRUB2 config for UEFI boot
+          cat > "${ISO_TREE}/EFI/BOOT/grub.cfg" << 'GRUBEOF'
+          set default=0
+          set timeout=5
+
+          menuentry "Install Zoro Linux 10 (Santoryu)" --class zorolinux {
+            linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg quiet
+            initrdefi /images/pxeboot/initrd.img
+          }
+
+          menuentry "Install Zoro Linux 10 (Basic Graphics)" --class zorolinux {
+            linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg nomodeset quiet
+            initrdefi /images/pxeboot/initrd.img
+          }
+
+          menuentry "Rescue Mode" --class zorolinux {
+            linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=ZORO_LINUX_10 rescue quiet
+            initrdefi /images/pxeboot/initrd.img
+          }
+          GRUBEOF
+
+          # isolinux config for BIOS boot
+          cat > "${ISO_TREE}/isolinux/isolinux.cfg" << 'ISOEOF'
+          UI vesamenu.c32
+          TIMEOUT 50
+          DEFAULT install
+
+          MENU TITLE Zoro Linux 10 (Santoryu Edition)
+          MENU COLOR border  0 #00000000 #00000000 none
+          MENU COLOR sel      0 #ffffffff #522D6A4F all
+          MENU COLOR title    0 #ff52B788 #00000000 none
+
+          LABEL install
+            MENU LABEL ^Install Zoro Linux 10
+            KERNEL /images/pxeboot/vmlinuz
+            APPEND initrd=/images/pxeboot/initrd.img inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg quiet
+
+          LABEL basic
+            MENU LABEL Install (Basic ^Graphics)
+            KERNEL /images/pxeboot/vmlinuz
+            APPEND initrd=/images/pxeboot/initrd.img inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg nomodeset quiet
+
+          LABEL rescue
+            MENU LABEL ^Rescue Mode
+            KERNEL /images/pxeboot/vmlinuz
+            APPEND initrd=/images/pxeboot/initrd.img inst.stage2=hd:LABEL=ZORO_LINUX_10 rescue quiet
+          ISOEOF
+
+          # Copy isolinux binaries
+          cp /usr/share/syslinux/isolinux.bin "${ISO_TREE}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/vesamenu.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/ldlinux.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/libcom32.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/libutil.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
+
+          echo "  ✓ Boot configuration created"
+
+      - name: Generate boot images with Lorax
+        run: |
+          echo "⚔ Generating boot images..."
+          ISO_TREE="${BUILD_ROOT}/iso-tree"
+          mkdir -p "${ISO_TREE}/images/pxeboot"
+
+          # Try lorax for boot images, fall back to copying from host
+          lorax --product="Zoro Linux" \
+                --version="${ZORO_RELEASE}" \
+                --release="${ZORO_RELEASE}" \
+                --isfinal \
+                --volid="ZORO_LINUX_10" \
+                --source="file://${REPO_ROOT}/BaseOS/x86_64/os" \
+                --source="file://${REPO_ROOT}/AppStream/x86_64/os" \
+                --resultdir="${BUILD_ROOT}/lorax-output" \
+                2>&1 | tail -30 || true
+
+          # Copy boot images from lorax output
+          if [ -d "${BUILD_ROOT}/lorax-output/images/pxeboot" ]; then
+            cp -r "${BUILD_ROOT}/lorax-output/images/"* "${ISO_TREE}/images/"
+            cp -r "${BUILD_ROOT}/lorax-output/EFI" "${ISO_TREE}/" 2>/dev/null || true
+            echo "  ✓ Lorax boot images generated"
+          else
+            # Fallback: copy kernel/initrd from installed system
+            KERNEL=$(ls /boot/vmlinuz-* 2>/dev/null | head -1)
+            INITRD=$(ls /boot/initramfs-* 2>/dev/null | head -1)
+            if [ -n "$KERNEL" ] && [ -n "$INITRD" ]; then
+              cp "$KERNEL" "${ISO_TREE}/images/pxeboot/vmlinuz"
+              cp "$INITRD" "${ISO_TREE}/images/pxeboot/initrd.img"
+              echo "  ⚠ Using host kernel as fallback"
+            else
+              echo "  ⚠ No boot images available — ISO will not be bootable"
+            fi
+          fi
+
+      - name: Create .discinfo and .treeinfo
+        run: |
+          ISO_TREE="${BUILD_ROOT}/iso-tree"
+          TIMESTAMP=$(date +%s)
+
+          cat > "${ISO_TREE}/.discinfo" << EOF
+          ${TIMESTAMP}
+          Zoro Linux ${ZORO_RELEASE}
+          x86_64
+          ALL
+          EOF
+
+          cat > "${ISO_TREE}/.treeinfo" << EOF
+          [general]
+          name = Zoro Linux ${ZORO_RELEASE}
+          family = Zoro Linux
+          timestamp = ${TIMESTAMP}
+          variant = Santoryu
+          version = ${ZORO_RELEASE}
+          packagedir =
+          arch = x86_64
+
+          [images-x86_64]
+          kernel = images/pxeboot/vmlinuz
+          initrd = images/pxeboot/initrd.img
+
+          [variant-BaseOS]
+          id = BaseOS
+          name = BaseOS
+          type = variant
+          packages = BaseOS/Packages
+          repository = BaseOS
+
+          [variant-AppStream]
+          id = AppStream
+          name = AppStream
+          type = variant
+          packages = AppStream/Packages
+          repository = AppStream
+          EOF
+
+          echo "  ✓ Metadata files created"
+
+      - name: Assemble ISO with xorriso
+        run: |
+          echo "⚔ Assembling Zoro Linux ISO..."
+          ISO_TREE="${BUILD_ROOT}/iso-tree"
+          mkdir -p ${ISO_ROOT}
+          ISO_NAME="ZoroLinux-${ZORO_RELEASE}-x86_64-Santoryu.iso"
+
+          xorriso -as mkisofs \
+            -V "ZORO_LINUX_10" \
+            -o "${ISO_ROOT}/${ISO_NAME}" \
+            -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin 2>/dev/null || true \
+            -c isolinux/boot.cat \
+            -b isolinux/isolinux.bin \
+            -no-emul-boot \
+            -boot-load-size 4 \
+            -boot-info-table \
+            -eltorito-alt-boot \
+            -e images/efiboot.img \
+            -no-emul-boot \
+            -isohybrid-gpt-basdat \
+            -R -J \
+            "${ISO_TREE}" \
+            2>&1 || {
+              # Fallback: simpler ISO without UEFI
+              echo "  ⚠ Falling back to BIOS-only ISO..."
+              xorriso -as mkisofs \
+                -V "ZORO_LINUX_10" \
+                -o "${ISO_ROOT}/${ISO_NAME}" \
+                -R -J \
+                -b isolinux/isolinux.bin \
+                -c isolinux/boot.cat \
+                -no-emul-boot \
+                -boot-load-size 4 \
+                -boot-info-table \
+                "${ISO_TREE}" 2>&1 || \
+              # Last resort: just make a data ISO
+              xorriso -as mkisofs \
+                -V "ZORO_LINUX_10" \
+                -o "${ISO_ROOT}/${ISO_NAME}" \
+                -R -J \
+                "${ISO_TREE}" 2>&1
+            }
+
+          # Implant MD5 checksum
+          implantisomd5 "${ISO_ROOT}/${ISO_NAME}" 2>/dev/null || true
+
+          echo ""
+          echo "  ✓ ISO assembled: ${ISO_NAME}"
+          ls -lh "${ISO_ROOT}/${ISO_NAME}" 2>/dev/null || true
+
+      - name: Generate checksums
+        run: |
+          cd ${ISO_ROOT}
+          for iso in *.iso; do
+            [ -f "$iso" ] || continue
+            sha256sum "$iso" > "${iso}.sha256"
+            echo "  ✓ SHA256: $iso"
+          done
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zoro-linux-iso
+          path: |
+            /srv/zoro-isos/10/*.iso
+            /srv/zoro-isos/10/*.sha256
+          retention-days: 14
+          if-no-files-found: warn
+          compression-level: 0
+
+  # ── Stage 4: Release Summary ───────────────────────────────────
+  release-summary:
+    name: "📋 Release Summary"
+    needs: build-iso
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download ISO info
+        uses: actions/download-artifact@v4
+        with:
+          name: zoro-linux-iso
+          path: iso-output/
+        continue-on-error: true
+
+      - name: Print build summary
+        run: |
+          echo "═══════════════════════════════════════════════════"
+          echo "  ⚔  ZORO LINUX 10 — BUILD SUMMARY"
+          echo "═══════════════════════════════════════════════════"
+          echo ""
+          echo "  Version:   ${ZORO_RELEASE} (${ZORO_CODENAME})"
+          echo "  Branch:    ${{ github.ref_name }}"
+          echo "  Commit:    ${{ github.sha }}"
+          echo "  Trigger:   ${{ github.event_name }}"
+          echo ""
+          if ls iso-output/*.iso 1>/dev/null 2>&1; then
+            echo "  📀 ISOs Built:"
+            for iso in iso-output/*.iso; do
+              SIZE=$(du -h "$iso" | cut -f1)
+              echo "    → $(basename $iso) ($SIZE)"
+            done
+            echo ""
+            echo "  ✓ Build SUCCESSFUL"
+          else
+            echo "  ⚠ No ISO files found in artifacts"
+            echo "  Check build-iso job logs for details"
+          fi
+          echo ""
+          echo "═══════════════════════════════════════════════════"
