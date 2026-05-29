@@ -1,0 +1,69 @@
+.TH ZORO-FETCH 1 "2026" "Zoro Linux 10" "Zoro Linux Manual"
+
+.SH NAME
+zoro\-fetch \- Zoro Linux system information display tool
+
+.SH SYNOPSIS
+.B zoro\-fetch
+.RI [ options ]
+
+.SH DESCRIPTION
+.B zoro-fetch
+is a custom system information tool for Zoro Linux, replacing neofetch/fastfetch.
+It displays system information alongside a stylised three-sword ASCII art logo
+in the Zoro Linux colour palette (green, gold, silver).
+
+.SH OUTPUT FIELDS
+.TP
+.B OS
+Operating system name and version.
+.TP
+.B Kernel
+Linux kernel version.
+.TP
+.B Uptime
+System uptime in days, hours, minutes.
+.TP
+.B Packages
+Number of installed RPM packages.
+.TP
+.B Shell
+Current shell (bash, zsh, etc.).
+.TP
+.B Resolution
+Display resolution (if graphical session).
+.TP
+.B DE/WM
+Desktop environment: ZoroDeck (GNOME) or ZoroBlade (KDE).
+.TP
+.B Terminal
+Terminal emulator name.
+.TP
+.B CPU
+CPU model and core count.
+.TP
+.B GPU
+GPU model (if detected).
+.TP
+.B RAM
+Used / Total memory.
+
+.SH AUTOMATIC EXECUTION
+By default, zoro-fetch runs automatically on interactive shell login via
+.IR /etc/profile.d/zoro-fetch.sh .
+It only runs if a graphical display or SSH session is detected.
+
+.SH FILES
+.TP
+.I /usr/bin/zoro-fetch
+The zoro-fetch binary.
+.TP
+.I /etc/profile.d/zoro-fetch.sh
+Login script that triggers zoro-fetch.
+
+.SH SEE ALSO
+.BR zoro-linux (7),
+.BR zoro-harden (8)
+
+.SH AUTHOR
+The Zoro Linux Project <devel@zorolinux.org>

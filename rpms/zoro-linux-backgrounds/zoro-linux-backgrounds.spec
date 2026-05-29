@@ -33,9 +33,7 @@ All artwork is original vector SVG at 3840x2160 resolution.
 %install
 # Wallpaper images
 install -d -m 0755 %{buildroot}%{_datadir}/backgrounds/zorolinux
-for svg in %{SOURCE0}/*.svg; do
-    install -m 0644 "$svg" %{buildroot}%{_datadir}/backgrounds/zorolinux/
-done
+cp -a %{SOURCE0}/. %{buildroot}%{_datadir}/backgrounds/zorolinux/
 
 # GNOME background properties
 install -d -m 0755 %{buildroot}%{_datadir}/gnome-background-properties
