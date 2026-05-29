@@ -18,16 +18,20 @@ Displays system information with Zoro-themed ASCII art in the terminal.
 Written in Go for fast, single-binary deployment.
 
 %prep
-# SOURCE0 is the src/ directory — copy its contents into a 'src' subdir
-mkdir -p src
-cp -a %{SOURCE0}/. src/
+# Nothing to unpack — sources are staged directly in %build.
 
 %build
-cd src
+# Stage the Go sources into the build dir and compile in one section so
+# there is no cross-section working-directory ambiguity (RPM 4.20/EL10).
+rm -rf %{_builddir}/gosrc
+mkdir -p %{_builddir}/gosrc
+cp -a %{SOURCE0}/. %{_builddir}/gosrc/
+cd %{_builddir}/gosrc
+export GOFLAGS="-mod=mod"
 go build -ldflags="-s -w" -o zoro-fetch .
 
 %install
-install -D -m 0755 src/zoro-fetch %{buildroot}%{_bindir}/zoro-fetch
+install -D -m 0755 %{_builddir}/gosrc/zoro-fetch %{buildroot}%{_bindir}/zoro-fetch
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d/zoro-fetch.sh
 install -D -m 0644 %{SOURCE2} %{buildroot}%{_mandir}/man1/zoro-fetch.1
 
