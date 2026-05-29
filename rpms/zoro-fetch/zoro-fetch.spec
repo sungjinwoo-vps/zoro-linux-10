@@ -18,7 +18,9 @@ Displays system information with Zoro-themed ASCII art in the terminal.
 Written in Go for fast, single-binary deployment.
 
 %prep
-cp -a %{SOURCE0} src
+# SOURCE0 is the src/ directory — copy its contents into a 'src' subdir
+mkdir -p src
+cp -a %{SOURCE0}/. src/
 
 %build
 cd src

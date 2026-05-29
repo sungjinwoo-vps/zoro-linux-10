@@ -45,7 +45,7 @@ ln -sf %{_datadir}/backgrounds/zorolinux %{buildroot}%{_datadir}/wallpapers/zoro
 
 %files
 %dir %{_datadir}/backgrounds/zorolinux
-%{_datadir}/backgrounds/zorolinux/*.svg
+%{_datadir}/backgrounds/zorolinux/
 %{_datadir}/gnome-background-properties/zorolinux-backgrounds.xml
 %dir %{_datadir}/wallpapers/zorolinux
 %{_datadir}/wallpapers/zorolinux/contents
