@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- ═══════════════════════════════════════════════════════
+       Zoro Linux Logo — Three-Sword Silhouette
+       Original vector artwork for Zoro Linux 10
+       ═══════════════════════════════════════════════════════ -->
+  <defs>
+    <!-- Gradient for sword blades -->
+    <linearGradient id="bladeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A8B5C8"/>
+      <stop offset="50%" stop-color="#F5F5F0"/>
+      <stop offset="100%" stop-color="#A8B5C8"/>
+    </linearGradient>
+    <!-- Gold gradient for guards -->
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="50%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+    <!-- Green glow -->
+    <filter id="greenGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feFlood flood-color="#52B788" flood-opacity="0.3"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle shadow -->
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background circle (optional, dark) -->
+  <circle cx="256" cy="256" r="240" fill="#0D1117" stroke="#2D6A4F" stroke-width="3"/>
+
+  <!-- ── Centre Sword (vertical) ──────────────────────────── -->
+  <g filter="url(#shadow)">
+    <!-- Blade -->
+    <rect x="251" y="60" width="10" height="240" rx="2"
+          fill="url(#bladeGrad)" opacity="0.95"/>
+    <!-- Tip -->
+    <polygon points="256,45 248,70 264,70" fill="#F5F5F0"/>
+    <!-- Guard (tsuba) -->
+    <ellipse cx="256" cy="305" rx="28" ry="8" fill="url(#goldGrad)" stroke="#8B6914" stroke-width="1"/>
+    <!-- Handle (tsuka) -->
+    <rect x="252" y="310" width="8" height="80" rx="3" fill="#2D6A4F"/>
+    <!-- Handle wrap pattern -->
+    <line x1="252" y1="320" x2="260" y2="325" stroke="#52B788" stroke-width="1.5" opacity="0.6"/>
+    <line x1="252" y1="335" x2="260" y2="340" stroke="#52B788" stroke-width="1.5" opacity="0.6"/>
+    <line x1="252" y1="350" x2="260" y2="355" stroke="#52B788" stroke-width="1.5" opacity="0.6"/>
+    <line x1="252" y1="365" x2="260" y2="370" stroke="#52B788" stroke-width="1.5" opacity="0.6"/>
+    <!-- Pommel -->
+    <circle cx="256" cy="395" r="7" fill="url(#goldGrad)" stroke="#8B6914" stroke-width="1"/>
+  </g>
+
+  <!-- ── Left Sword (angled -30°) ────────────────────────── -->
+  <g transform="rotate(-30, 256, 300)" filter="url(#shadow)">
+    <rect x="251" y="80" width="10" height="220" rx="2"
+          fill="url(#bladeGrad)" opacity="0.85"/>
+    <polygon points="256,65 248,90 264,90" fill="#F5F5F0" opacity="0.85"/>
+    <ellipse cx="256" cy="305" rx="26" ry="7" fill="url(#goldGrad)" stroke="#8B6914" stroke-width="1"/>
+    <rect x="252" y="310" width="8" height="75" rx="3" fill="#2D6A4F"/>
+    <line x1="252" y1="320" x2="260" y2="325" stroke="#52B788" stroke-width="1.5" opacity="0.5"/>
+    <line x1="252" y1="338" x2="260" y2="343" stroke="#52B788" stroke-width="1.5" opacity="0.5"/>
+    <line x1="252" y1="356" x2="260" y2="361" stroke="#52B788" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="256" cy="390" r="6" fill="url(#goldGrad)" stroke="#8B6914" stroke-width="1"/>
+  </g>
+
+  <!-- ── Right Sword (angled +30°) ───────────────────────── -->
+  <g transform="rotate(30, 256, 300)" filter="url(#shadow)">
+    <rect x="251" y="80" width="10" height="220" rx="2"
+          fill="url(#bladeGrad)" opacity="0.85"/>
+    <polygon points="256,65 248,90 264,90" fill="#F5F5F0" opacity="0.85"/>
+    <ellipse cx="256" cy="305" rx="26" ry="7" fill="url(#goldGrad)" stroke="#8B6914" stroke-width="1"/>
+    <rect x="252" y="310" width="8" height="75" rx="3" fill="#2D6A4F"/>
+    <line x1="252" y1="320" x2="260" y2="325" stroke="#52B788" stroke-width="1.5" opacity="0.5"/>
+    <line x1="252" y1="338" x2="260" y2="343" stroke="#52B788" stroke-width="1.5" opacity="0.5"/>
+    <line x1="252" y1="356" x2="260" y2="361" stroke="#52B788" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="256" cy="390" r="6" fill="url(#goldGrad)" stroke="#8B6914" stroke-width="1"/>
+  </g>
+
+  <!-- ── Accent ring (green glow around swords) ──────────── -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#52B788" stroke-width="1.5"
+          opacity="0.3" filter="url(#greenGlow)"/>
+
+  <!-- ── Text: ZORO LINUX ────────────────────────────────── -->
+  <text x="256" y="445" text-anchor="middle"
+        font-family="Inter, 'Noto Sans', sans-serif" font-size="24" font-weight="700"
+        fill="#F5F5F0" letter-spacing="6">ZORO LINUX</text>
+
+  <!-- ── Text: Santoryu ──────────────────────────────────── -->
+  <text x="256" y="470" text-anchor="middle"
+        font-family="Inter, 'Noto Sans', sans-serif" font-size="12" font-weight="400"
+        fill="#C9A84C" letter-spacing="4">SANTORYU EDITION</text>
+</svg>

@@ -1,0 +1,9 @@
+[zoro-dojo]
+name=Zoro Linux $releasever - Dojo (Extra community packages)
+baseurl=https://mirror.zorolinux.org/$releasever/Dojo/$basearch/os/
+#mirrorlist=https://mirrors.zorolinux.org/mirrorlist?repo=dojo-$releasever&arch=$basearch
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-zorolinux
+enabled=0
+countme=1
+metadata_expire=6h

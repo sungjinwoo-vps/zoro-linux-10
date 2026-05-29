@@ -126,33 +126,70 @@ jobs:
           rpmdev-setuptree 2>/dev/null || true
           echo "  ✓ Build environment ready"
 
+      - name: Prepare build-time sources
+        run: |
+          chmod +x antigravity/ci-prepare-sources.sh
+          ./antigravity/ci-prepare-sources.sh
+
       - name: Build all RPMs
         run: |
+          set -uo pipefail
           echo "⚔ Building Zoro Linux RPMs..."
           BUILT=0
           FAILED=0
-          for spec in rpms/*/zoro-*.spec rpms/*/*.spec; do
+          FAILED_PKGS=""
+
+          # Go env for zoro-fetch (needs to fetch modules)
+          export GOFLAGS="-mod=mod"
+          export GOPROXY="https://proxy.golang.org,direct"
+          export GOCACHE="$HOME/.cache/go-build"
+
+          for spec in rpms/*/*.spec; do
             [ -f "$spec" ] || continue
             PKG=$(basename "$spec" .spec)
-            echo "  → Building $PKG..."
-
-            # Copy sources
             SPEC_DIR=$(dirname "$spec")
-            if [ -d "$SPEC_DIR/SOURCES" ]; then
-              cp -r "$SPEC_DIR/SOURCES/"* ~/rpmbuild/SOURCES/ 2>/dev/null || true
-            fi
+            echo ""
+            echo "──────────────────────────────────────────────"
+            echo "  → Building $PKG"
 
-            # Build RPM
-            if rpmbuild -bb "$spec" 2>&1 | tail -5; then
+            # Point _sourcedir at the package's own in-repo SOURCES dir so that
+            # specs using relative paths (e.g. %{_sourcedir}/../../../shell/..)
+            # resolve correctly — this mirrors the Makefile's rpmbuild calls.
+            SRCDIR="${PWD}/${SPEC_DIR}/SOURCES"
+
+            # Build — capture the REAL rpmbuild exit code (not a piped tool's).
+            # --nodeps: runtime Requires need not be installed to build a noarch pkg.
+            LOG=$(mktemp)
+            if rpmbuild -bb --nodeps \
+                 --define "_topdir $HOME/rpmbuild" \
+                 --define "_sourcedir ${SRCDIR}" \
+                 "$spec" > "$LOG" 2>&1; then
               echo "  ✓ $PKG built"
               BUILT=$((BUILT + 1))
             else
-              echo "  ✗ $PKG failed"
+              echo "  ✗ $PKG FAILED — last 25 lines:"
+              tail -25 "$LOG" | sed 's/^/      /'
               FAILED=$((FAILED + 1))
+              FAILED_PKGS="${FAILED_PKGS} ${PKG}"
             fi
+            rm -f "$LOG"
           done
+
           echo ""
+          echo "══════════════════════════════════════════════"
           echo "⚔ RPM Build Summary: $BUILT built, $FAILED failed"
+          [ -n "$FAILED_PKGS" ] && echo "  Failed packages:${FAILED_PKGS}"
+          echo "══════════════════════════════════════════════"
+
+          # Fail the job if NOTHING built, or if any package failed.
+          if [ "$BUILT" -eq 0 ]; then
+            echo "::error::No RPMs were built — pipeline cannot continue"
+            exit 1
+          fi
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::${FAILED} package(s) failed to build:${FAILED_PKGS}"
+            exit 1
+          fi
 
       - name: Collect RPMs
         run: |
@@ -166,7 +203,7 @@ jobs:
           name: zoro-rpms
           path: built-rpms/
           retention-days: 7
-          if-no-files-found: warn
+          if-no-files-found: error
 
   # ── Stage 2: Compose Repository ────────────────────────────────
   compose-repo:

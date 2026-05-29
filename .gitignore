@@ -8,12 +8,12 @@
 *.iso
 *.img
 
-# rpmbuild output directories
+# rpmbuild output directories (inside ~/rpmbuild only — NOT the source rpms/ dir.
+# Note: filesystems are often case-insensitive, so do not use bare "RPMS/"
+# which would also match the source "rpms/" directory.)
 /rpmbuild/
-/BUILD/
+/build/
 /BUILDROOT/
-/RPMS/
-/SRPMS/
 
 # Temporary files
 *.tmp
@@ -26,10 +26,15 @@
 *.log
 /var/log/antigravity/
 
-# GPG keys (never commit private keys)
+# GPG keys (never commit keys — CI generates the public key at build time)
 *.gpg
 *.asc
-!rpms/zoro-linux-release/SOURCES/RPM-GPG-KEY-zorolinux
+RPM-GPG-KEY-zorolinux
+
+# CI-generated build artifacts (rasterized from committed SVG sources)
+rpms/zoro-linux-release/SOURCES/zoro-linux-logo.png
+rpms/zoro-fetch/SOURCES/src/zoro-fetch
+go.sum
 
 # OS junk
 .DS_Store

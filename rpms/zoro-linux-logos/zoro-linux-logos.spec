@@ -13,6 +13,8 @@ Obsoletes:      centos-stream-logos < %{version}-%{release}
 Conflicts:      centos-stream-logos
 Conflicts:      fedora-logos
 
+Source0:        zoro-linux-logo.svg
+
 %description
 Logo assets for Zoro Linux 10 (Santoryu Edition).
 Three-sword SVG logo in multiple sizes for use in bootloader,
@@ -27,9 +29,9 @@ install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
 
 # Install SVG logo
-install -m 0644 %{_sourcedir}/../../artwork/logo/zoro-linux-logo.svg \
+install -m 0644 %{SOURCE0} \
     %{buildroot}%{_datadir}/pixmaps/zoro-linux-logo.svg
-install -m 0644 %{_sourcedir}/../../artwork/logo/zoro-linux-logo.svg \
+install -m 0644 %{SOURCE0} \
     %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/zoro-linux.svg
 
 # Anaconda/system logos directory
