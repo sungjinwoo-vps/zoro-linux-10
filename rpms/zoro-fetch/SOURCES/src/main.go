@@ -407,7 +407,7 @@ func separator(username, hostname string) string {
 func main() {
 	username := getUsername()
 	hostname := getHostname()
-	osName, _ := getOSInfo()
+	osName, osVersion := getOSInfo()
 	kernel := getKernel()
 	uptime := getUptime()
 	packages := getPackageCount()
@@ -421,7 +421,6 @@ func main() {
 	localIP := getLocalIP()
 	disk := getDiskUsage()
 
-	_ = osName
 
 	// Build info lines
 	var infoLines []string
@@ -442,7 +441,7 @@ func main() {
 		}
 	}
 
-	addField("OS", "Zoro Linux 10 (Santoryu Edition)")
+	addField("OS", fmt.Sprintf("%s %s", osName, osVersion))
 	addField("Kernel", kernel)
 	addField("Uptime", uptime)
 	addField("Packages", packages)

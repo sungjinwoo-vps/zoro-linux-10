@@ -40,7 +40,14 @@ help:
 	@echo "    make rpm-fetch    Build zoro-fetch RPM"
 	@echo "    make rpm-themes   Build zoro-linux-themes RPM"
 	@echo "    make compose      Run Pungi compose (Stage 3)"
-	@echo "    make isos         Build all ISOs (Stages 4-5)"
+	@echo "    make isos         Build generic ISOs (dvd/minimal/netinstall)"
+	@echo "    make isos-editions Build all 5 edition ISOs"
+	@echo "    make isos-everything Build everything (generic + editions)"
+	@echo "    make iso-blade    Build: The Blade (Minimal) ISO"
+	@echo "    make iso-strategist Build: The Strategist (Server) ISO"
+	@echo "    make iso-swordsman Build: The Swordsman (Workstation) ISO"
+	@echo "    make iso-santoryu Build: Santoryu Full (Dojo) ISO"
+	@echo "    make iso-current  Build: The Current (Container Host) ISO"
 	@echo "    make sign         Sign ISOs and generate checksums"
 	@echo "    make release      Package release assets"
 	@echo "    make all          Full pipeline (Stages 0-7)"
@@ -83,8 +90,43 @@ installer:
 
 .PHONY: isos
 isos:
-	@echo "⚔  Stage 5: ISO Assembly"
-	sudo bash antigravity/stage5-iso-assembly.sh
+	@echo "⚔  Stage 5: ISO Assembly (generic variants)"
+	sudo bash antigravity/stage5-iso-assembly.sh --variant=all
+
+.PHONY: isos-editions
+isos-editions:
+	@echo "⚔  Stage 5: ISO Assembly (all 5 editions)"
+	sudo bash antigravity/stage5-iso-assembly.sh --variant=all-editions
+
+.PHONY: isos-everything
+isos-everything:
+	@echo "⚔  Stage 5: ISO Assembly (everything — generic + editions)"
+	sudo bash antigravity/stage5-iso-assembly.sh --variant=everything
+
+.PHONY: iso-blade
+iso-blade:
+	@echo "⚔  Building: The Blade (Minimal) ISO"
+	sudo bash antigravity/stage5-iso-assembly.sh --edition=Blade
+
+.PHONY: iso-strategist
+iso-strategist:
+	@echo "⚔  Building: The Strategist (Server) ISO"
+	sudo bash antigravity/stage5-iso-assembly.sh --edition=Strategist
+
+.PHONY: iso-swordsman
+iso-swordsman:
+	@echo "⚔  Building: The Swordsman (Workstation) ISO"
+	sudo bash antigravity/stage5-iso-assembly.sh --edition=Swordsman
+
+.PHONY: iso-santoryu
+iso-santoryu:
+	@echo "⚔  Building: Santoryu Full (Dojo Edition) ISO"
+	sudo bash antigravity/stage5-iso-assembly.sh --edition=Santoryu
+
+.PHONY: iso-current
+iso-current:
+	@echo "⚔  Building: The Current (Container Host) ISO"
+	sudo bash antigravity/stage5-iso-assembly.sh --edition=Current
 
 .PHONY: sign
 sign:

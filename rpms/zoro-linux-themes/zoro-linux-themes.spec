@@ -33,15 +33,15 @@ install -d -m 0755 %{buildroot}%{_datadir}/themes/ZoroDark/gtk-4.0
 install -d -m 0755 %{buildroot}%{_datadir}/themes/ZoroLight/gtk-3.0
 install -d -m 0755 %{buildroot}%{_datadir}/themes/ZoroLight/gtk-4.0
 
-install -m 0644 %{SOURCE0}/gtk-3.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroDark/gtk-3.0/
-install -m 0644 %{SOURCE0}/gtk-4.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroDark/gtk-4.0/
+install -m 0644 %{_sourcedir}/ZoroDark/gtk-3.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroDark/gtk-3.0/
+install -m 0644 %{_sourcedir}/ZoroDark/gtk-4.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroDark/gtk-4.0/
 
-install -m 0644 %{SOURCE1}/gtk-3.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroLight/gtk-3.0/
-install -m 0644 %{SOURCE1}/gtk-4.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroLight/gtk-4.0/
+install -m 0644 %{_sourcedir}/ZoroLight/gtk-3.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroLight/gtk-3.0/
+install -m 0644 %{_sourcedir}/ZoroLight/gtk-4.0/gtk.css %{buildroot}%{_datadir}/themes/ZoroLight/gtk-4.0/
 
 # GNOME Shell theme
 install -d -m 0755 %{buildroot}%{_datadir}/gnome-shell/theme/ZoroDeck
-install -m 0644 %{SOURCE2}/gnome-shell/gnome-shell.css \
+install -m 0644 %{_sourcedir}/ZoroDeck/gnome-shell/gnome-shell.css \
     %{buildroot}%{_datadir}/gnome-shell/theme/ZoroDeck/gnome-shell.css
 
 # Theme index files

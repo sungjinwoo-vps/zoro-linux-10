@@ -97,7 +97,7 @@ cp "${ZORO_ISO_DIR}/RPM-GPG-KEY-zorolinux" "$ZORO_GPG_KEY_FILE" 2>/dev/null || t
 zoro_log INFO "Step 6.6: Verifying signatures..."
 
 VERIFY_OK=true
-find "$ZORO_ISO_DIR" -name "*.iso" | while read -r iso_file; do
+while read -r iso_file; do
     if [[ -f "${iso_file}.asc" ]]; then
         if gpg --verify "${iso_file}.asc" "$iso_file" 2>/dev/null; then
             zoro_log INFO "  ✓ Signature verified: $(basename "$iso_file")"
@@ -106,7 +106,7 @@ find "$ZORO_ISO_DIR" -name "*.iso" | while read -r iso_file; do
             VERIFY_OK=false
         fi
     fi
-done
+done < <(find "$ZORO_ISO_DIR" -name "*.iso")
 
 # ── Summary ──────────────────────────────────────────────────
 echo ""

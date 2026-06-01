@@ -15,13 +15,20 @@ on:
       variant:
         description: "ISO variant to build"
         required: false
-        default: "dvd"
+        default: "all-editions"
         type: choice
         options:
+          - all-editions
+          - Blade
+          - Strategist
+          - Swordsman
+          - Santoryu
+          - Current
           - dvd
           - minimal
           - netinstall
           - all
+          - everything
 
 env:
   ZORO_VERSION: "10"
@@ -328,98 +335,44 @@ jobs:
             2>&1 | tail -15 || true
           echo "  ✓ ISO tools installed"
 
-      - name: Prepare ISO tree
+      - name: Prepare Boot Templates
         run: |
-          echo "⚔ Preparing ISO tree..."
-          VARIANT="${{ github.event.inputs.variant || 'dvd' }}"
-          ISO_TREE="${BUILD_ROOT}/iso-tree"
-          mkdir -p "${ISO_TREE}"/{BaseOS/Packages,AppStream/Packages,images,EFI/BOOT,isolinux}
+          echo "⚔ Preparing boot templates for Stage 5..."
+          MOD_DIR="${BUILD_ROOT}/iso-modified"
+          mkdir -p "${MOD_DIR}"/{images,EFI/BOOT,isolinux}
 
-          # Copy packages
-          if ls ${REPO_ROOT}/BaseOS/x86_64/os/Packages/*.rpm 1>/dev/null 2>&1; then
-            cp ${REPO_ROOT}/BaseOS/x86_64/os/Packages/*.rpm "${ISO_TREE}/BaseOS/Packages/"
-          fi
-          if ls ${REPO_ROOT}/AppStream/x86_64/os/Packages/*.rpm 1>/dev/null 2>&1; then
-            cp ${REPO_ROOT}/AppStream/x86_64/os/Packages/*.rpm "${ISO_TREE}/AppStream/Packages/"
-          fi
-
-          # Generate repodata for ISO tree
-          createrepo_c "${ISO_TREE}/BaseOS" 2>/dev/null || true
-          createrepo_c "${ISO_TREE}/AppStream" 2>/dev/null || true
-
-          # Copy kickstart
-          cp installer/kickstarts/ks-santoryu.cfg "${ISO_TREE}/ks.cfg"
-
-          echo "  ✓ ISO tree prepared"
-
-      - name: Create boot configuration
-        run: |
-          ISO_TREE="${BUILD_ROOT}/iso-tree"
-
-          # GRUB2 config for UEFI boot
-          cat > "${ISO_TREE}/EFI/BOOT/grub.cfg" << 'GRUBEOF'
+          # Create GRUB config
+          cat > "${MOD_DIR}/EFI/BOOT/grub.cfg" << 'GRUBEOF'
           set default=0
           set timeout=5
 
-          menuentry "Install Zoro Linux 10 (Santoryu)" --class zorolinux {
+          menuentry "Install Zoro Linux 10" --class zorolinux {
             linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg quiet
-            initrdefi /images/pxeboot/initrd.img
-          }
-
-          menuentry "Install Zoro Linux 10 (Basic Graphics)" --class zorolinux {
-            linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg nomodeset quiet
-            initrdefi /images/pxeboot/initrd.img
-          }
-
-          menuentry "Rescue Mode" --class zorolinux {
-            linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=ZORO_LINUX_10 rescue quiet
             initrdefi /images/pxeboot/initrd.img
           }
           GRUBEOF
 
-          # isolinux config for BIOS boot
-          cat > "${ISO_TREE}/isolinux/isolinux.cfg" << 'ISOEOF'
+          # Create isolinux config
+          cat > "${MOD_DIR}/isolinux/isolinux.cfg" << 'ISOEOF'
           UI vesamenu.c32
           TIMEOUT 50
           DEFAULT install
-
-          MENU TITLE Zoro Linux 10 (Santoryu Edition)
-          MENU COLOR border  0 #00000000 #00000000 none
-          MENU COLOR sel      0 #ffffffff #522D6A4F all
-          MENU COLOR title    0 #ff52B788 #00000000 none
 
           LABEL install
             MENU LABEL ^Install Zoro Linux 10
             KERNEL /images/pxeboot/vmlinuz
             APPEND initrd=/images/pxeboot/initrd.img inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg quiet
-
-          LABEL basic
-            MENU LABEL Install (Basic ^Graphics)
-            KERNEL /images/pxeboot/vmlinuz
-            APPEND initrd=/images/pxeboot/initrd.img inst.stage2=hd:LABEL=ZORO_LINUX_10 inst.ks=hd:LABEL=ZORO_LINUX_10:/ks.cfg nomodeset quiet
-
-          LABEL rescue
-            MENU LABEL ^Rescue Mode
-            KERNEL /images/pxeboot/vmlinuz
-            APPEND initrd=/images/pxeboot/initrd.img inst.stage2=hd:LABEL=ZORO_LINUX_10 rescue quiet
           ISOEOF
 
-          # Copy isolinux binaries
-          cp /usr/share/syslinux/isolinux.bin "${ISO_TREE}/isolinux/" 2>/dev/null || true
-          cp /usr/share/syslinux/vesamenu.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
-          cp /usr/share/syslinux/ldlinux.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
-          cp /usr/share/syslinux/libcom32.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
-          cp /usr/share/syslinux/libutil.c32 "${ISO_TREE}/isolinux/" 2>/dev/null || true
-
-          echo "  ✓ Boot configuration created"
+          cp /usr/share/syslinux/isolinux.bin "${MOD_DIR}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/vesamenu.c32 "${MOD_DIR}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/ldlinux.c32 "${MOD_DIR}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/libcom32.c32 "${MOD_DIR}/isolinux/" 2>/dev/null || true
+          cp /usr/share/syslinux/libutil.c32 "${MOD_DIR}/isolinux/" 2>/dev/null || true
 
       - name: Generate boot images with Lorax
         run: |
           echo "⚔ Generating boot images..."
-          ISO_TREE="${BUILD_ROOT}/iso-tree"
-          mkdir -p "${ISO_TREE}/images/pxeboot"
-
-          # Try lorax for boot images, fall back to copying from host
           lorax --product="Zoro Linux" \
                 --version="${ZORO_RELEASE}" \
                 --release="${ZORO_RELEASE}" \
@@ -430,116 +383,30 @@ jobs:
                 --resultdir="${BUILD_ROOT}/lorax-output" \
                 2>&1 | tail -30 || true
 
-          # Copy boot images from lorax output
+          MOD_DIR="${BUILD_ROOT}/iso-modified"
           if [ -d "${BUILD_ROOT}/lorax-output/images/pxeboot" ]; then
-            cp -r "${BUILD_ROOT}/lorax-output/images/"* "${ISO_TREE}/images/"
-            cp -r "${BUILD_ROOT}/lorax-output/EFI" "${ISO_TREE}/" 2>/dev/null || true
-            echo "  ✓ Lorax boot images generated"
+            cp -r "${BUILD_ROOT}/lorax-output/images/"* "${MOD_DIR}/images/"
+            cp -r "${BUILD_ROOT}/lorax-output/EFI" "${MOD_DIR}/" 2>/dev/null || true
           else
-            # Fallback: copy kernel/initrd from installed system
             KERNEL=$(ls /boot/vmlinuz-* 2>/dev/null | head -1)
             INITRD=$(ls /boot/initramfs-* 2>/dev/null | head -1)
             if [ -n "$KERNEL" ] && [ -n "$INITRD" ]; then
-              cp "$KERNEL" "${ISO_TREE}/images/pxeboot/vmlinuz"
-              cp "$INITRD" "${ISO_TREE}/images/pxeboot/initrd.img"
-              echo "  ⚠ Using host kernel as fallback"
-            else
-              echo "  ⚠ No boot images available — ISO will not be bootable"
+              mkdir -p "${MOD_DIR}/images/pxeboot"
+              cp "$KERNEL" "${MOD_DIR}/images/pxeboot/vmlinuz"
+              cp "$INITRD" "${MOD_DIR}/images/pxeboot/initrd.img"
             fi
           fi
 
-      - name: Create .discinfo and .treeinfo
+      - name: Assemble ISOs using Stage 5
         run: |
-          ISO_TREE="${BUILD_ROOT}/iso-tree"
-          TIMESTAMP=$(date +%s)
-
-          cat > "${ISO_TREE}/.discinfo" << EOF
-          ${TIMESTAMP}
-          Zoro Linux ${ZORO_RELEASE}
-          x86_64
-          ALL
-          EOF
-
-          cat > "${ISO_TREE}/.treeinfo" << EOF
-          [general]
-          name = Zoro Linux ${ZORO_RELEASE}
-          family = Zoro Linux
-          timestamp = ${TIMESTAMP}
-          variant = Santoryu
-          version = ${ZORO_RELEASE}
-          packagedir =
-          arch = x86_64
-
-          [images-x86_64]
-          kernel = images/pxeboot/vmlinuz
-          initrd = images/pxeboot/initrd.img
-
-          [variant-BaseOS]
-          id = BaseOS
-          name = BaseOS
-          type = variant
-          packages = BaseOS/Packages
-          repository = BaseOS
-
-          [variant-AppStream]
-          id = AppStream
-          name = AppStream
-          type = variant
-          packages = AppStream/Packages
-          repository = AppStream
-          EOF
-
-          echo "  ✓ Metadata files created"
-
-      - name: Assemble ISO with xorriso
-        run: |
-          echo "⚔ Assembling Zoro Linux ISO..."
-          ISO_TREE="${BUILD_ROOT}/iso-tree"
-          mkdir -p ${ISO_ROOT}
-          ISO_NAME="ZoroLinux-${ZORO_RELEASE}-x86_64-Santoryu.iso"
-
-          xorriso -as mkisofs \
-            -V "ZORO_LINUX_10" \
-            -o "${ISO_ROOT}/${ISO_NAME}" \
-            -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin 2>/dev/null || true \
-            -c isolinux/boot.cat \
-            -b isolinux/isolinux.bin \
-            -no-emul-boot \
-            -boot-load-size 4 \
-            -boot-info-table \
-            -eltorito-alt-boot \
-            -e images/efiboot.img \
-            -no-emul-boot \
-            -isohybrid-gpt-basdat \
-            -R -J \
-            "${ISO_TREE}" \
-            2>&1 || {
-              # Fallback: simpler ISO without UEFI
-              echo "  ⚠ Falling back to BIOS-only ISO..."
-              xorriso -as mkisofs \
-                -V "ZORO_LINUX_10" \
-                -o "${ISO_ROOT}/${ISO_NAME}" \
-                -R -J \
-                -b isolinux/isolinux.bin \
-                -c isolinux/boot.cat \
-                -no-emul-boot \
-                -boot-load-size 4 \
-                -boot-info-table \
-                "${ISO_TREE}" 2>&1 || \
-              # Last resort: just make a data ISO
-              xorriso -as mkisofs \
-                -V "ZORO_LINUX_10" \
-                -o "${ISO_ROOT}/${ISO_NAME}" \
-                -R -J \
-                "${ISO_TREE}" 2>&1
-            }
-
-          # Implant MD5 checksum
-          implantisomd5 "${ISO_ROOT}/${ISO_NAME}" 2>/dev/null || true
-
-          echo ""
-          echo "  ✓ ISO assembled: ${ISO_NAME}"
-          ls -lh "${ISO_ROOT}/${ISO_NAME}" 2>/dev/null || true
+          echo "⚔ Assembling ISOs..."
+          export ZORO_BUILD_ROOT="${BUILD_ROOT}"
+          export ZORO_COMPOSE_DIR="${REPO_ROOT}"
+          export ZORO_ISO_DIR="${ISO_ROOT}"
+          mkdir -p "${ZORO_ISO_DIR}"
+          
+          VARIANT="${{ github.event.inputs.variant || 'all-editions' }}"
+          sudo -E bash antigravity/stage5-iso-assembly.sh --variant="$VARIANT"
 
       - name: Generate checksums
         run: |

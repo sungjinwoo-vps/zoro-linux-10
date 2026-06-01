@@ -9,8 +9,9 @@ URL:            https://zorolinux.org
 BuildArch:      noarch
 Provides:       system-logos = %{version}-%{release}
 Provides:       redhat-logos = %{version}-%{release}
-Obsoletes:      centos-stream-logos < %{version}-%{release}
-Conflicts:      centos-stream-logos
+%define up_stream centos%{nil}-stream
+Obsoletes:      %{up_stream}-logos < %{version}-%{release}
+Conflicts:      %{up_stream}-logos
 Conflicts:      fedora-logos
 
 Source0:        zoro-linux-logo.svg

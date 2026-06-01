@@ -1,18 +1,18 @@
 # ⚔️ Zoro Linux 10 — Santoryu Edition
 
 <p align="center">
-  <strong>A CentOS Stream 10 rebuild with the spirit of a swordsman.</strong>
+  <strong>An enterprise-grade Linux distribution with the spirit of a swordsman.</strong>
 </p>
 
 ---
 
 ## Overview
 
-Zoro Linux is a community-driven enterprise Linux distribution based on CentOS Stream 10. It features custom branding, security hardening, and a fully automated build pipeline.
+Zoro Linux is a community-driven enterprise Linux distribution built on an Enterprise Linux 10 foundation. It features custom branding, security hardening, and a fully automated build pipeline.
 
 | | |
 |---|---|
-| **Base** | CentOS Stream 10 / RHEL 10 |
+| **Base** | Enterprise Linux 10 (Community Build) |
 | **Kernel** | 6.12.x |
 | **Architectures** | x86_64, aarch64 |
 | **Desktop** | GNOME 47 + KDE Plasma 6 |
