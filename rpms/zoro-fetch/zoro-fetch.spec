@@ -8,7 +8,7 @@ License:        GPLv2
 URL:            https://zorolinux.org
 BuildRequires:  golang >= 1.22
 
-Source0:        src/
+# Source0:        src/
 Source1:        zoro-fetch.sh
 Source2:        zoro-fetch.1
 
