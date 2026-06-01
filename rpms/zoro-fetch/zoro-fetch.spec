@@ -23,9 +23,11 @@ Written in Go for fast, single-binary deployment.
 %build
 # Stage the Go sources into the build dir and compile in one section so
 # there is no cross-section working-directory ambiguity (RPM 4.20/EL10).
+# Copy from %{_sourcedir}/src directly: a "Source0: src/" with a trailing
+# slash makes %{SOURCE0} resolve to the SOURCES dir itself, not SOURCES/src.
 rm -rf %{_builddir}/gosrc
 mkdir -p %{_builddir}/gosrc
-cp -a %{SOURCE0}/. %{_builddir}/gosrc/
+cp -a %{_sourcedir}/src/. %{_builddir}/gosrc/
 cd %{_builddir}/gosrc
 export GOFLAGS="-mod=mod"
 go build -ldflags="-s -w" -o zoro-fetch .
