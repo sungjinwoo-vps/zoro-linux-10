@@ -10,7 +10,7 @@ BuildArch:      noarch
 Provides:       desktop-backgrounds-basic
 Provides:       system-backgrounds = %{version}-%{release}
 
-Source0:        wallpapers/
+# Source0:        wallpapers/
 Source1:        zorolinux-backgrounds.xml
 
 %description

@@ -10,9 +10,9 @@ BuildArch:      noarch
 Requires:       gtk3
 Requires:       gnome-shell
 
-Source0:        ZoroDark
-Source1:        ZoroLight
-Source2:        ZoroDeck
+# Source0:        ZoroDark
+# Source1:        ZoroLight
+# Source2:        ZoroDeck
 
 %description
 GTK3, GTK4, and GNOME Shell themes for Zoro Linux 10.

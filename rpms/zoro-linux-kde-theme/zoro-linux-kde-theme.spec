@@ -11,8 +11,8 @@ Requires:       plasma-workspace
 Recommends:     sddm
 
 Source0:        ZoroGreen.colors
-Source1:        Santoryu
-Source2:        ZoroDojo
+# Source1:        Santoryu
+# Source2:        ZoroDojo
 
 %description
 KDE Plasma theming package for Zoro Linux 10 (ZoroBlade Shell).
@@ -33,11 +33,11 @@ install -D -m 0644 %{SOURCE0} \
 
 # Plasma theme
 install -d -m 0755 %{buildroot}%{_datadir}/plasma/desktoptheme/Santoryu
-cp -a %{SOURCE1}/* %{buildroot}%{_datadir}/plasma/desktoptheme/Santoryu/
+cp -a %{_sourcedir}/Santoryu/* %{buildroot}%{_datadir}/plasma/desktoptheme/Santoryu/
 
 # SDDM theme
 install -d -m 0755 %{buildroot}%{_datadir}/sddm/themes/ZoroDojo
-cp -a %{SOURCE2}/* %{buildroot}%{_datadir}/sddm/themes/ZoroDojo/
+cp -a %{_sourcedir}/ZoroDojo/* %{buildroot}%{_datadir}/sddm/themes/ZoroDojo/
 
 %files
 %{_datadir}/color-schemes/ZoroGreen.colors
