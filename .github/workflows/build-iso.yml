@@ -39,6 +39,13 @@ env:
   REPO_ROOT: "/srv/zoro-repos/10"
   ISO_ROOT: "/srv/zoro-isos/10"
 
+# Force bash for every run step. The minimal CentOS Stream 10 container makes
+# GitHub fall back to "sh -e", which disables brace expansion (e.g.
+# mkdir {a,b}) and other bashisms the pipeline relies on.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   # ── Stage 0: Lint & Validate ──────────────────────────────────
   validate:
@@ -139,12 +146,20 @@ jobs:
           ./antigravity/ci-prepare-sources.sh
 
       - name: Build all RPMs
+        shell: bash
         run: |
           set -uo pipefail
           echo "⚔ Building Zoro Linux RPMs..."
           BUILT=0
           FAILED=0
           FAILED_PKGS=""
+
+          # RPMs are written DIRECTLY into the workspace collection dir using
+          # an absolute _rpmdir + a flat _rpmfilename (no per-arch subdirs).
+          # This removes any $HOME/~ expansion ambiguity between build & collect.
+          OUT="${GITHUB_WORKSPACE}/built-rpms"
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
 
           # Go env for zoro-fetch (needs to fetch modules)
           export GOFLAGS="-mod=mod"
@@ -170,6 +185,8 @@ jobs:
             if rpmbuild -bb --nodeps \
                  --define "_topdir $HOME/rpmbuild" \
                  --define "_sourcedir ${SRCDIR}" \
+                 --define "_rpmdir ${OUT}" \
+                 --define "_rpmfilename %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm" \
                  "$spec" > "$LOG" 2>&1; then
               echo "  ✓ $PKG built"
               BUILT=$((BUILT + 1))
@@ -186,6 +203,8 @@ jobs:
           echo "══════════════════════════════════════════════"
           echo "⚔ RPM Build Summary: $BUILT built, $FAILED failed"
           [ -n "$FAILED_PKGS" ] && echo "  Failed packages:${FAILED_PKGS}"
+          echo "  RPMs in ${OUT}:"
+          ls -la "$OUT" | sed 's/^/    /'
           echo "══════════════════════════════════════════════"
 
           # Fail the job if NOTHING built, or if any package failed.
@@ -199,10 +218,13 @@ jobs:
           fi
 
       - name: Collect RPMs
+        shell: bash
         run: |
-          mkdir -p ${{ github.workspace }}/built-rpms
-          find ~/rpmbuild/RPMS -name "*.rpm" -exec cp {} ${{ github.workspace }}/built-rpms/ \;
-          ls -la ${{ github.workspace }}/built-rpms/ || echo "No RPMs built"
+          echo "⚔ Collected RPMs:"
+          ls -la "${GITHUB_WORKSPACE}/built-rpms/"
+          COUNT=$(find "${GITHUB_WORKSPACE}/built-rpms" -name "*.rpm" | wc -l)
+          echo "  Total: ${COUNT} RPM(s)"
+
 
       - name: Upload RPMs artifact
         uses: actions/upload-artifact@v4
